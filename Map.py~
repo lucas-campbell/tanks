@@ -1,0 +1,59 @@
+##########################
+# Cam, Lucas, Omar
+# 11/5/19
+# Map.py Class Definition
+##########################
+
+from Tile import Tile
+
+class Map:
+##################################
+# INIT AND GENERATION
+##################################
+    def __init__(self, length = 2, obstacleTiles = []):
+        self.tiles = []
+        self.tank1 = self._defaultGenTank(length)
+        self.tank2 = self._defaultGenTank(length, 20, 20)
+        self._genMap(obstacleTiles)
+
+    ##################################
+    # defaultGenTank
+    ##################################
+
+    def _defaultGenTank(self, length, startX = 0, startY = 0):
+        '''
+        Generate a default tank with top-left Tile in location
+         startX, startY
+        '''
+        tankTiles = []
+        for x in range(startX, length):
+            for y in range(startY, length):
+                tankTiles.append(Tile(x,y))
+        return tankTiles
+
+    ##################################
+    # genMap
+    ##################################
+    def _genMap(self, length = 25, obstacleTiles = []):
+        '''
+        Generates a new map with basic Tiles
+        '''
+        for x in range(0, length):
+            for y in range(0, length):
+                self.tiles.append(Tile(x,y))
+        self._setObstacles(obstacleTiles)
+
+    ##################################
+    # setObstacles
+    ##################################
+    def _setObstacles(self, obstacleTiles):
+        '''
+        Sets Obstacles inside a map
+        '''
+        for t in obstacleTiles:
+            index = self.tiles.index(t)
+            self.tiles[index].is_obstacle = True 
+        
+##################################
+# UPDATING AND COLLISION
+##################################
