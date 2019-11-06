@@ -33,7 +33,7 @@ class Arena:
         return tankTiles
 
     ##################################
-    # genMap
+    # genArena
     ##################################
     def _genArena(self, length = 25, obstacleTiles = []):
         '''
