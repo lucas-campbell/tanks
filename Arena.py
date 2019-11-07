@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 ##########################
 # Cam, Lucas, Omar
 # 11/5/19
@@ -15,7 +16,7 @@ class Arena:
         self.tiles = []
         self.tank1 = self._defaultGenTank(length)
         self.tank2 = self._defaultGenTank(length, 20, 20)
-        self._genMap(obstacleTiles = obstacleTiles)
+        self._genArena(obstacleTiles = obstacleTiles)
 
     ##################################
     # defaultGenTank
@@ -59,7 +60,21 @@ class Arena:
             if t.x != self.tiles[index].x:
                 print >> sys.stderr, "Update a Tile incorrectly"
             self.tiles[index].is_obstacle = True
-        
+
 ##################################
 # UPDATING AND COLLISION
 ##################################
+
+
+##################################
+# TESTING
+##################################
+def main(argv):
+    obstacleTiles = [Tile(2,4), Tile(3,3), Tile(0,0), Tile(1,7)]
+    testArena = Arena(obstacleTiles = obstacleTiles)
+    for t in testArena.tiles:
+        if t.is_obstacle:
+            print(t.x, t.y, t.is_obstacle)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
