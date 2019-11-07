@@ -4,7 +4,8 @@
 # 11/5/19
 # Map.py Class Definition
 ##########################
-
+import socket
+import pickle
 import sys
 from Tile import Tile
 
@@ -70,11 +71,26 @@ class Arena:
 # TESTING
 ##################################
 def main(argv):
-    obstacleTiles = [Tile(2,4), Tile(3,3), Tile(0,0), Tile(1,7)]
-    testArena = Arena(obstacleTiles = obstacleTiles)
-    for t in testArena.tiles:
-        if t.is_obstacle:
-            print(t.x, t.y, t.is_obstacle)
+    HOST = '127.0.0.1'
+    PORT = 65432
 
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((HOST, PORT))
+        s.listen()
+        conn, addr = s.accept()
+        with conn:
+            print('Connected by', addr)
+            while True:
+                data = conn.recv(1024)
+                obstacleTiles = [Tile(2,4), Tile(3,3), Tile(0,0), Tile(1,7)]
+                testArena = Arena(obstacleTiles = obstacleTiles)
+                for t in testArena.tiles:
+                    if t.is_obstacle:
+                        print(t.x, t.y, t.is_obstacle)
+
+                if not data:
+                    break
+                    conn.sendall(data)
+        
 if __name__ == '__main__':
     main(sys.argv[1:])
