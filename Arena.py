@@ -7,7 +7,7 @@
 import sys
 from Tile import Tile
 
-class Map:
+class Arena:
 ##################################
 # INIT AND GENERATION
 ##################################
@@ -33,9 +33,9 @@ class Map:
         return tankTiles
 
     ##################################
-    # genMap
+    # genArena
     ##################################
-    def _genMap(self, length = 25, obstacleTiles = []):
+    def _genArena(self, length = 25, obstacleTiles = []):
         '''
         Generates a new map with basic Tiles
         '''
