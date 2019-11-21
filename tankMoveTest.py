@@ -14,10 +14,11 @@ white = (255,255,255)
 
 clock = pygame.time.Clock()
 crashed = False
-tankSprite = pygame.image.load('tank.png').convert()
+tankSprite = pygame.image.load('bluetank.png').convert()
 tank_x, tank_y = tankSprite.get_size()
-smallTank = pygame.Surface((10,10))
-pygame.transform.scale(tankSprite, (10, 10), smallTank)
+spriteSize = (40, 40)
+smallTank = pygame.Surface(spriteSize)
+pygame.transform.scale(tankSprite, spriteSize, smallTank)
 
 
 def drawTank(x,y):
@@ -27,10 +28,12 @@ def drawTank(x,y):
 
 x =  (display_width * 0.5)
 y = (display_height * 0.5)
-old_rect = pygame.Rect((x,y), (20, 20))
-car_speed = 0
+cover_w, cover_h = smallTank.get_width() + 10, smallTank.get_height() + 10
+old_rect = pygame.Rect((x,y), (cover_w, cover_h))
+tank_speed = 0
 
 gameDisplay.fill(white)
+drawTank(x, y)
 pygame.display.update()
 
 while not crashed:
@@ -52,12 +55,12 @@ while not crashed:
                 
         ######################
     ##
-    old_rect = pygame.Rect((x,y), (20, 20))
+    old_rect = pygame.Rect((x,y), (cover_w, cover_h))
     x += x_change
     y += y_change
     rect_x = x - 10
     rect_y = y - 10
-    to_update = pygame.Rect((rect_x, rect_y), (20, 20))
+    to_update = pygame.Rect((rect_x, rect_y), (cover_w, cover_h))
     ##         
     white_pixels = pygame.Surface((old_rect.width, old_rect.height))
     white_pixels.fill(white)
@@ -66,7 +69,7 @@ while not crashed:
     drawTank(x,y)
         
     pygame.display.update([to_update, old_rect])
-    clock.tick(30)
+    clock.tick(60)
 
 pygame.quit()
 quit()
