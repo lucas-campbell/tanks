@@ -1,0 +1,12 @@
+* Arena.py:
+ - change concepts of Tiles to areas/bodies of pixels, rather than just an x/y
+    coord
+ - add "+ width" and "+ height" to out-of-bounds checking
+ - same for Tanks
+ - change Arena constructor to take length of Arena, not just size of Tank
+ 
+* tankMoveTest.py
+ - move sep pieces into funcs
+ - integrate w/Arena driver
+ - add objects
+    * make them impassable

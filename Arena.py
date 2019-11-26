@@ -35,6 +35,7 @@ class Arena:
                 tankTiles.append(Tile(x,y))
         return tankTiles
 
+
     ##################################
     # genArena
     ##################################
@@ -53,6 +54,7 @@ class Arena:
     def _setObstacles(self, length, obstacleTiles):
         '''
         Sets Obstacles inside a map.
+        length = length of one side of a map
         NOTE: Tile order is IMMUTABLE in the list.
         '''
         for t in obstacleTiles:
