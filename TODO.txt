@@ -1,7 +1,4 @@
 * Arena.py:
- - change concepts of Tiles to areas/bodies of pixels, rather than just an x/y
-    coord
- - add "+ width" and "+ height" to out-of-bounds checking
  - same for Tanks
  - change Arena constructor to take length of Arena, not just size of Tank
  
@@ -10,3 +7,27 @@
  - integrate w/Arena driver
  - add objects
     * make them impassable
+
+* Create Tank.py: similar to Tile.py
+ - also has direction that it's facing
+ - health points, power, etc
+
+* Create main (client) driver/skeleton main with:
+ - takes IP address of server as argument
+ - attempt to connect to server, display message of 'failed', 'waiting for other
+ user', or 'starting game'. 
+ - receives Message object from server, checks contents, sends update info to
+ Display
+ - also receives coordinates for movement or for attack from Display, pickles
+ the data, and sends to server
+ - tells display when to show win/lose messages
+
+ * GUI
+ - sprite should turn when you move certain direction
+ - Game Over pop up for player
+ - You Win pop-up for other player
+ - interactions between obstacles and tanks
+ - keypresses --> data sent to client, in order to update server
+
+
+ Note: hostname -I

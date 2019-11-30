@@ -1,8 +1,9 @@
+#!/usr/bin/env python3
 import pygame
 
 pygame.init()
 
-display_width = 800
+display_width = 400
 display_height = 600
 
 gameDisplay = pygame.display.set_mode((display_width,display_height))
@@ -69,7 +70,7 @@ while not crashed:
     drawTank(x,y)
         
     pygame.display.update([to_update, old_rect])
-    clock.tick(60)
+    clock.tick(20)
 
 pygame.quit()
 quit()
