@@ -13,7 +13,7 @@ class Arena:
 ##################################
 # INIT AND GENERATION
 ##################################
-    def __init__(self, tankLength = 2, arenaLength = 25, obstacleTiles = []):
+    def __init__(self, tankLength = 2, arenaLength = 400, obstacleTiles = []):
         self.tiles = []
         self.tank1 = self._defaultGenTank(tankLength)
         tank2XY = arenaLength-2*tankLength-1
@@ -58,7 +58,7 @@ class Arena:
         NOTE: Tile order is IMMUTABLE in the list.
         '''
         for t in obstacleTiles:
-            if t.x < 0 or t.x >= length or t.y < 0 or t.y >= length:
+            if t.x < 0 or t.x+t.width >= length or t.y < 0 or t.y+t.height >= length:
                 raise Exception("Tile out-of-bounds")
             index = t.x*length + t.y
             if t.x != self.tiles[index].x:
@@ -74,8 +74,8 @@ class Arena:
 # TESTING
 ##################################
 def main(argv):
-    HOST = '127.0.0.1'
-    PORT = 65432
+    HOST = '130.64.23.187'
+    PORT = 47477
     
     #################
     # ARENA WHEEEEEEE
@@ -91,6 +91,7 @@ def main(argv):
     #################
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
+        print('Bound to Socket')
         s.listen()
         while True:
             conn, addr = s.accept()
