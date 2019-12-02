@@ -149,44 +149,63 @@ class Player(pygame.sprite.Sprite):
             self.image = pygame.transform.rotate(self.original, -90)
         self.direction = new_direction
 
-    def shoot(self):
+    def shoot(self, sprites, missiles):
         if self.direction == UDLR.up:
-            missile = Missile(args) #TODO
+            missile_center = (self.rect.centerx, self.rect.top - 4)
+            missile = Missile(missile_center, UDLR.up)
+        elif self.direction == UDLR.down:
+            missile_center = (self.rect.centerx, self.rect.bottom + 4)
+            missile = Missile(missile_center, UDLR.down)
+        elif self.direction == UDLR.left:
+            missile_center = (self.rect.left - 4, self.rect.centery)
+            missile = Missile(missile_center, UDLR.left)
+        else: # self.direction == UDLR.right
+            missile_center = (self.rect.left + 4, self.rect.centery)
+            missile = Missile(missile_center, UDLR.right)
+
+        # Add to list of all sprites for updating, plus list of all missiles
+        # for collisions
+        sprites.add(missile)
+        missiles.add(missile)
 
         
 
-class Obstacle:()
-    pass #TODO
+#class Obstacle:()
+#    pass #TODO
 
 class Missile(pygame.sprite.Sprite):
-    def __init__((x, y), direction):
+    def __init__(self, center, direction):
         pygame.sprite.Sprite.__init__(self)
-        # Get image and corresponding rectangle
+        # Get image
         self.image = pygame.image.load('spr_missile.png').convert()
         #TODO better scaling process(?), change to constants
-        self.image = pygame.transform.scale(self.image, (20, 20))
-        self.rect = self.image.get_rect()
-        # sets starting position of sprite, TODO set this automatically via
-        # input from user on spacebar (shoot button?)
-        #TODO if statements, set starting pos based on x/y
-        self.rect.center = center
-        # clear background for sprite
-        self.image.set_colorkey(WHITE)
+        self.image = pygame.transform.scale(self.image, (7, 14))
 
         # Set speed/direction for missile
         self.direction = direction
         if direction == UDLR.up:
+            # image starts out as up, so no rotation needed
             self.speedx = 0
             self.speedy = -10
         elif direction == UDLR.down:
+            self.image = pygame.transform.rotate(self.image, 180)
             self.speedx = 0
             self.speedy = 10
         elif direction == UDLR.left:
+            self.image = pygame.transform.rotate(self.image, 90)
             self.speedx = -10
             self.speedy = 0
-        else: # direction == UDLR.left:
+        else: # direction == UDLR.right:
+            self.image = pygame.transform.rotate(self.image, -90)
             self.speedx = 10
             self.speedy = 0
+
+        self.rect = self.image.get_rect()
+        # Set starting position
+        self.rect.center = center
+
+        # clear background for sprite TODO possibly black?
+        self.image.set_colorkey(WHITE)
 
     def update(self):
         self.rect.x += self.speedx

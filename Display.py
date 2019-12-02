@@ -79,6 +79,10 @@ def main():
     sprites.add(player1) 
     sprites.add(player2) 
 
+    # Create group of missiles to keep track of hits
+    # TODO do same for obstacles
+    missiles = pygame.sprite.Group()
+
     # Game loop
     running = True
     while running:
@@ -90,10 +94,11 @@ def main():
             if event.type == pygame.QUIT:
                 running = False 
             elif event.type == pygame.KEYDOWN:
+                # TODO change these to one player, just use spacebar
                 if event.key == pygame.K_RSHIFT:
-                    player1.shoot()
+                    player1.shoot(sprites, missiles)
                 elif event.key == pygame.K_LSHIFT:
-                    player2.shoot()
+                    player2.shoot(sprites, missiles)
 
         # Update: update sprite positions, send info to server/ get back
         # confirmations. TODO add server communication
@@ -101,7 +106,7 @@ def main():
 
         # Draw / render
         screen.fill(BLACK)
-        # TODO possibly blit instead
+        #  Blits all sprites to screen
         sprites.draw(screen)
         # after drawing everything, flip the display
         pygame.display.flip()
