@@ -23,11 +23,20 @@
  - tells display when to show win/lose messages
 
  * GUI
- - sprite should turn when you move certain direction
  - Game Over pop up for player
- - You Win pop-up for other player
- - interactions between obstacles and tanks
+    - You Win pop-up for other player
+ - interactions between obstacles and tanks (mostly handled server-side)
  - keypresses --> data sent to client, in order to update server
+    - then use updated data from server to update display
+ - need missiles, explosion (maybe)
+ - useful links: 
+        http://kidscancode.org/blog/tags/pygame/ 
+        https://github.com/kidscancode/pygame_tutorials/tree/master/shmup
+        https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group
+        https://www.pygame.org/docs/ref/transform.html#pygame.transform.rotate
+        https://www.pygame.org/docs/ref/rect.html
+        https://www.pygame.org/docs/ref/key.html
+        https://opengameart.org/
 
 
  Note: hostname -I
