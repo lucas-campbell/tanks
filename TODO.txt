@@ -12,10 +12,15 @@
  - also has direction that it's facing
  - health points, power, etc
 
+* Create main (server) skeleton with:
+ - Hold until all clients are connected
+ - Message object updates from client
+ - 
+
 * Create main (client) driver/skeleton main with:
  - takes IP address of server as argument
  - attempt to connect to server, display message of 'failed', 'waiting for other
- user', or 'starting game'. 
+ user', or 'starting game'.
  - receives Message object from server, checks contents, sends update info to
  Display
  - also receives coordinates for movement or for attack from Display, pickles

@@ -8,4 +8,9 @@ import sys
 from Arena import *
 
 class TMessage:
-    def __init__(self,):
+    def __init__(self, clientTank : Tank, serverTank : Tank, clientXY : Tuple, serverXY : Tuple):
+        self._clientTank = clientTank
+        self._clientXY = clientXY
+        self._serverTank = serverTank
+        self._serverXY = serverXY
+        
