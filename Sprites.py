@@ -2,7 +2,7 @@ import pygame
 from enum import Enum
 
 # Make sure these match the values in Display.py
-WIDTH = 400
+WIDTH = 800
 HEIGHT = 600
 
 # define colors
@@ -27,6 +27,7 @@ class Player(pygame.sprite.Sprite):
         #TODO better scaling process(?), change to constants
         self.image = pygame.transform.scale(self.image, (40, 40))
         self.original = self.image.copy()
+        self.original.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         # sets starting position of sprite, TODO change with a ctor param
         if is_p1:
@@ -41,7 +42,7 @@ class Player(pygame.sprite.Sprite):
         # starting direction
         self.direction = UDLR.up
         # clear background for sprite
-        self.image.set_colorkey(WHITE)
+        self.image.set_colorkey(BLACK)
 
     def update(self):
         #TODO possibly error checking done by server side instead of here.
@@ -179,7 +180,7 @@ class Missile(pygame.sprite.Sprite):
         # Get image
         self.image = pygame.image.load('spr_missile.png').convert()
         #TODO better scaling process(?), change to constants
-        self.image = pygame.transform.scale(self.image, (7, 14))
+        self.image = pygame.transform.scale(self.image, (15, 30))
 
         # Set speed/direction for missile
         self.direction = direction
