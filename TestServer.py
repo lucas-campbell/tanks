@@ -51,7 +51,7 @@ def main(argv, defaultHost):
 
         print(len(connections))
         
-        if len(connections) == 3: #3:, set 2 for testing 
+        if len(connections) == 3:
             #have all connections, run the game
             for sock in read_socks:
                 if sock != server:
@@ -64,10 +64,14 @@ def main(argv, defaultHost):
                     newData = oldInfo #change oldInfo and store it in newData
                     print("Sending Data")
 
-
+                    print("Connections:", len(connections))
+                    print("Reading Sockets:", len(read_socks))
+                    for tsock in read_socks:
+                        print(tsock)    
+                    print("Writing Sockets:", len(write_socks))
                     # Client is sending updated information
-                    for client in read_socks:
-                        if client != server and client != sock: #and client != sock, turned off for testing one client
+                    for client in connections:
+                        if client != server and client != sock: 
                             print("Sent")
                             update = pickle.dumps(newData)
                             msg_len = len(update)
@@ -78,7 +82,7 @@ def main(argv, defaultHost):
             for sock in write_socks:
                 if sock != server:
                     print(sock)
-                    
+
         elif len(connections) > 3:
             #too many connections, remove last connection
             connections.pop(len(connections)-1)
