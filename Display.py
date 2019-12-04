@@ -143,7 +143,7 @@ def main():
 
         # Draw / render
         #TODO remove fill black
-        screen.fill(BLACK)
+        #screen.fill(BLACK)
         screen.blit(background, background_rect)
         #  Blits all sprites to screen
         sprites.draw(screen)
