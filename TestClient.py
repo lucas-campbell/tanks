@@ -18,6 +18,7 @@ def main(argv, defaultHost):
         HOST = input('SERVER IP:')
     PORT = 47477      
 
+    #usr_msg = input()
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     #client.setblocking(0)
@@ -28,26 +29,23 @@ def main(argv, defaultHost):
     #Client connection loop
     while True:
         if not is_connected:
-            #msg = client.recv(64)
-            #print(msg.decode())
-            print("Connected")
+            print("Connected to server at IP:", HOST)
             is_connected = True
         else:
             #send information here
             try:
                 #data = Message()
-                data = pickle.dumps('hi')
+                data = pickle.dumps('temp input')
                 msg_len = str(len(data))
                 pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
                 data = bytes(pack_header, 'utf-8')+data
                 client.sendall(data)
-                
-                #wait for update here
-                #print("Updating")
+
+                #### wait for update here ###
                 full_msg = b''
                 new_msg = True
                 end_msg = True
-                
+
                 while end_msg:
                     msg = client.recv(HEADERSIZE)
 
@@ -63,9 +61,10 @@ def main(argv, defaultHost):
 
                     full_msg += msg
 
-                    print(len(full_msg))
+                    #print(len(full_msg)), testing
 
                     if len(full_msg) - HEADERSIZE == msg_length:
+                        print("Got message")
                         data = pickle.loads(full_msg[HEADERSIZE:])
                         ### DATA MANIP/SCREEN UPDATES HERE ###
                         print(data)
