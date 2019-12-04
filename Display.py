@@ -69,10 +69,14 @@ def show_reset_screen(screen, background, background_rect, clock, won, lost):
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.display.quit()
                 pygame.quit()
+                exit(0)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    pygame.display.quit()
                     pygame.quit()
+                    exit(0)
                 elif event.key == pygame.K_SPACE:
                     waiting = False
 
@@ -151,7 +155,9 @@ def main():
         # TODO possibly call display.update() with list of dirty rect's
         pygame.display.flip()
 
+    pygame.display.quit()
     pygame.quit()
+    exit(0)
 
 if __name__ == "__main__":
     main()
