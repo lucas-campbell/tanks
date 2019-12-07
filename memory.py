@@ -15,10 +15,11 @@ class Player_pos:
 	self.direction = direct  
 
 class State:
-    __init__(self, _player1, _player2, _missles = [], _game_over = False):
+    __init__(self, _player1, _player2, _p1_missles = [], _p2_missles = [] _game_over = False):
         self.player1 = _player1 
         self.player2 = _player2
-        self.missles = _missles
+        self.p1_missles = _p1_missles
+        self.p2_missles = _p2_missles
         self.game_over = _game_over
 
 class Memory:
