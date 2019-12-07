@@ -23,8 +23,7 @@ class State:
 
 class Memory:
 	def __init__(self, player1, new_missles = None, game_over = False, p_won = False):
-
-		self.p1 = player1
+		self.p = player
 		self.end = game_over
 		self.player_won = p_won
 		self.missles = new_missles
