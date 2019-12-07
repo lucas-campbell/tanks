@@ -74,7 +74,6 @@ def main(argv, defaultHost):
                         else:
                             print("Uh oh, that's not right..")
                             exit() 
-                        newData = player_data #change oldInfo and store it in newData
                         print("Sending Data")
 
                         #print("Connections:", len(connections))
@@ -85,7 +84,7 @@ def main(argv, defaultHost):
                         # Client is sending updated information
                         for client in connections:
                             if client != server and client != sock: 
-                                update = pickle.dumps(newData)
+                                update = pickle.dumps(state)
                                 msg_len = len(update)
                                 pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
                                 update = bytes(pack_header, 'utf-8')+update
