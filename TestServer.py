@@ -29,7 +29,7 @@ def main(argv, defaultHost):
     player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
     player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
     players = [player1, player2]
-    state = State(players, _p1_missles = [], _p2_missles = [], _game_over = False)
+    state = State(players, [], _game_over = False)
     sample_msg = Memory(player1, new_missles = [], game_over = False, p_won = False)
 
     # CONNECTION SETUP W/ SOCKETS #
