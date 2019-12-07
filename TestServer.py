@@ -7,6 +7,7 @@
 import socket, select
 import pickle
 import sys
+from memory import *
 from Arena import *
 
 HEADERSIZE = 16
@@ -22,15 +23,20 @@ def main(argv, defaultHost):
         HOST = '127.0.0.1'
     else:
         HOST = input('SERVER IP:')
-        PORT = 47477
+    PORT = 47477
     
-    
+    #init server state conditions
+    player1 = Player_pos(pos = (200, 0), direct = 180)
+    player2 = Player_pos(pos = (200, 400), direct = 0)
+    state = State(player1, player2, _missles = [], _game_over = False)
+    sample_msg = Memory(player1, new_missles = [], game_over = False, p_won = False)
+
     # TEST ARENA #
-    obstacleTiles = [Tile(2,4), Tile(3,3), Tile(0,0), Tile(1,7)]
-    testArena = Arena(obstacleTiles = obstacleTiles)
-    for t in testArena.tiles:
-        if t.is_obstacle:
-            print(t.x, t.y, t.is_obstacle)
+    #obstacleTiles = [Tile(2,4), Tile(3,3), Tile(0,0), Tile(1,7)]
+    #testArena = Arena(obstacleTiles = obstacleTiles)
+    #for t in testArena.tiles:
+    #    if t.is_obstacle:
+    #        print(t.x, t.y, t.is_obstacle)
     
     #print(sys.getsizeof(data))
     # CONNECTION SETUP W/ SOCKETS #
@@ -48,41 +54,48 @@ def main(argv, defaultHost):
     while True:
 
         read_socks, write_socks, error_socks = select.select(connections, writes, broken)
-
-        print(len(connections))
         
         if len(connections) == 3:
             #have all connections, run the game
-            for sock in read_socks:
-                if sock != server:
-                    # Get message data
-                    header, data = getData(sock)
+            try:
+                for sock in read_socks:
+                    if sock != server:
+                        # Get message data
+                        header, data = getData(sock)
 
-                    ###MAKE MESSAGE CHANEGS/DATA UPDATES HERE###
-                    oldInfo = pickle.loads(data)
-                    
-                    newData = oldInfo #change oldInfo and store it in newData
-                    print("Sending Data")
+                        if sock == connections[1]:
+                            #update player1
 
-                    print("Connections:", len(connections))
-                    print("Reading Sockets:", len(read_socks))
-                    for tsock in read_socks:
-                        print(tsock)    
-                    print("Writing Sockets:", len(write_socks))
-                    # Client is sending updated information
-                    for client in connections:
-                        if client != server and client != sock: 
-                            print("Sent")
-                            update = pickle.dumps(newData)
-                            msg_len = len(update)
-                            pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
-                            update = bytes(pack_header, 'utf-8')+update
-                            client.sendall(update)
+                        elif sock == connections[2]:
+                            #update player2
+                            
+                        else:
+                            print("Uh oh, that's no right")
+                            exit() 
+                        ###MAKE MESSAGE CHANEGS/DATA UPDATES HERE###
+                        oldInfo = pickle.loads(data)
+                        # Notes:
+                            #Each tank should send ONLY their own info
+                            #Prevents one tank from updating another tank's position
+                        newData = oldInfo #change oldInfo and store it in newData
+                        print("Sending Data")
 
-            for sock in write_socks:
-                if sock != server:
-                    print(sock)
-
+                        #print("Connections:", len(connections))
+                        #print("Reading Sockets:", len(read_socks))
+                        #for tsock in read_socks:
+                        #    print(tsock)    
+                        #print("Writing Sockets:", len(write_socks))
+                        # Client is sending updated information
+                        for client in connections:
+                            if client != server and client != sock: 
+                                update = pickle.dumps(newData)
+                                msg_len = len(update)
+                                pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
+                                update = bytes(pack_header, 'utf-8')+update
+                                client.sendall(update)
+                                print("Sent")
+            except ConnectionResetError:
+                print(len(connections))
         elif len(connections) > 3:
             #too many connections, remove last connection
             connections.pop(len(connections)-1)
