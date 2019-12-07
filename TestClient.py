@@ -17,7 +17,7 @@ def main(argv, defaultHost):
     else:
         HOST = input('SERVER IP:')
     PORT = 47477      
-
+    player_num = 0
     player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
     player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
     state = State(player1, player2, _missles = [], _game_over = False)
@@ -32,6 +32,8 @@ def main(argv, defaultHost):
     while True:
         if not is_connected:
             print("Connected to server at IP:", HOST)
+            data = recv(HEADERSIZE)
+            player_num = int(data.decode())
             is_connected = True
         else:
             #send information here
