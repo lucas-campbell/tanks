@@ -69,10 +69,14 @@ def show_reset_screen(screen, background, background_rect, clock, won, lost):
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.display.quit()
                 pygame.quit()
+                exit(0)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    pygame.display.quit()
                     pygame.quit()
+                    exit(0)
                 elif event.key == pygame.K_SPACE:
                     waiting = False
 
@@ -86,6 +90,16 @@ def draw_text(surf, text, size, x, y):
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
 
+def explode(player, screen, background, background_rect, hits):
+    screen.blit(background, background_rect)
+    explosion = pygame.image.load('explosion.png').convert()
+    explosion = pygame.transform.scale(explosion, player.rect.size)
+    explosion_rect = explosion.get_rect()
+    explosion_rect.center = player.rect.center
+    screen.blit(explosion, explosion_rect)
+    pygame.display.flip()
+    while True:
+        pass
 
 ############################# MAIN DRIVER #########################
 
@@ -121,7 +135,8 @@ def GUI(conn, active_is_p1):
             sprites.add(player2) 
             # Create group of missiles to keep track of hits
             # TODO do same for obstacles
-            missiles = pygame.sprite.Group()
+            p1_missiles = pygame.sprite.Group()
+            p2_missiles = pygame.sprite.Group()
 
 
         # keep loop running at the right speed
@@ -134,9 +149,9 @@ def GUI(conn, active_is_p1):
             elif event.type == pygame.KEYDOWN:
                 # TODO change these to one player, just use spacebar
                 if event.key == pygame.K_RSHIFT:
-                    player1.shoot(sprites, missiles)
+                    player1.shoot(sprites, p1_missiles)
                 elif event.key == pygame.K_LSHIFT:
-                    player2.shoot(sprites, missiles)
+                    player2.shoot(sprites, p2_missiles)
 
         # Update: update sprite positions, send info to server/ get back
         # confirmations. TODO add server communication
@@ -145,6 +160,14 @@ def GUI(conn, active_is_p1):
         hits = pygame.hits.collisions()
         if hits()
         conn.send(Memory())
+
+        p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, False)
+        p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, False)
+
+        if len(p1_hit) > 0:
+            explode(player1, screen, background, background_rect, p1_hit)
+        elif len(p2_hit) > 0:
+            explode(player2, screen, background, background_rect, p2_hit)
 
         # Draw / render
         #TODO remove fill black
@@ -156,7 +179,9 @@ def GUI(conn, active_is_p1):
         # TODO possibly call display.update() with list of dirty rect's
         pygame.display.flip()
 
+    pygame.display.quit()
     pygame.quit()
+    exit(0)
 
 if __name__ == "__main__":
     main()

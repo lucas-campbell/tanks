@@ -6,7 +6,7 @@
 import socket
 import pickle
 import sys
-#from Message import *
+from memory import *
 from Arena import *
 
 HEADERSIZE = 16
@@ -17,8 +17,10 @@ def main(argv, defaultHost):
     else:
         HOST = input('SERVER IP:')
     PORT = 47477      
-
-    #usr_msg = input()
+    
+    player1 = Player_pos(pos = (200, 0), direct = 180)
+    player2 = Player_pos(pos = (200, 400), direct = 0)
+    state = State(player1, player2, _missles = [], _game_over = False)
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     #client.setblocking(0)
@@ -67,6 +69,7 @@ def main(argv, defaultHost):
                         print("Got message")
                         data = pickle.loads(full_msg[HEADERSIZE:])
                         ### DATA MANIP/SCREEN UPDATES HERE ###
+                        #Note: updating other player state
                         print(data)
                         
                         end_msg = False
