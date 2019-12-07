@@ -87,13 +87,13 @@ def draw_text(surf, text, size, x, y):
     surf.blit(text_surface, text_rect)
 
 
-############################# MAIN DRIVER ########################
+############################# MAIN DRIVER #########################
 
 
 
-def main():
+def GUI(conn, active_is_p1):
     
-
+##################  SETUP   #######################################
     # initialize pygame and create window
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -103,19 +103,20 @@ def main():
     background_rect = background.get_rect()
     clock = pygame.time.Clock()
 
-    ### Game loop ###
+################## GAME LOOP ######################################
     running = True
     # Start out with reset screen
     game_over = True
     while running:
+
         if game_over:
             show_reset_screen(screen, background, background_rect, clock, False, False)
             game_over = False
+
             # Create players and their sprites
             sprites = pygame.sprite.Group()
-            #TODO call constructor with correct images, plus indicator of P1/P2
-            player1 = Sprites.Player('high_res_blue_tank.png', is_p1=True)
-            player2 = Sprites.Player('high_res_green_tank.png', is_p1=False)
+            player1 = Sprites.Player('high_res_blue_tank.png', is_p1=True, active_is_p1)
+            player2 = Sprites.Player('high_res_green_tank.png', is_p1=False, !active_is_p1)
             sprites.add(player1) 
             sprites.add(player2) 
             # Create group of missiles to keep track of hits
@@ -139,7 +140,11 @@ def main():
 
         # Update: update sprite positions, send info to server/ get back
         # confirmations. TODO add server communication
-        sprites.update()
+        sprites.update(conn)
+
+        hits = pygame.hits.collisions()
+        if hits()
+        conn.send(Memory())
 
         # Draw / render
         #TODO remove fill black

@@ -19,8 +19,9 @@ class UDLR(Enum):
     right = 3
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, image_file_path, is_p1):
+    def __init__(self, image_file_path, is_p1, is_active_player):
         self.is_p1 = is_p1
+        self.is_active_player = is_active_player
         pygame.sprite.Sprite.__init__(self)
         # Get image and corresponding rectangle
         self.image = pygame.image.load(image_file_path).convert()
@@ -44,16 +45,26 @@ class Player(pygame.sprite.Sprite):
         # clear background for sprite
         self.image.set_colorkey(BLACK)
 
-    def update(self):
-        #TODO possibly error checking done by server side instead of here.
+    def update(self, conn):
+        """
+        Implementation of pygame.sprite.Sprite.update method. Gets called for 
+        each sprite in a Group with pygame.sprite.Group.update()
+        Takes in a connection object used for communicating with the client
+        middleman process. Calculates new position & waits for update on other
+        tank's position, then updates display accordingly.
+        """
+        # TODO possibly error checking done by server side instead of here.
         # But, may be faster to do here anyways.
+        
+        ### Process User Input ###
 
-        if self.is_p1:
+        # set in case no key was pressed
+        new_direction = self.direction
+
+        if is_active_player:
+            keystate = pygame.key.get_pressed()
             # Side-side movement
             self.speedx = 0
-            keystate = pygame.key.get_pressed()
-            # set in case no key was pressed
-            new_direction = self.direction
             if keystate[pygame.K_LEFT]:
                 self.speedx = -5
                 new_direction = UDLR.left
@@ -61,6 +72,7 @@ class Player(pygame.sprite.Sprite):
                 self.speedx = 5
                 new_direction = UDLR.right
 
+            # Out-of-bounds checking
             self.rect.x += self.speedx
             if self.rect.right > WIDTH:
                 self.rect.right = WIDTH
@@ -76,50 +88,64 @@ class Player(pygame.sprite.Sprite):
                 self.speedy = -5
                 new_direction = UDLR.up
 
+            # Out-of-bounds checking
             self.rect.y += self.speedy
             if self.rect.bottom > HEIGHT:
                 self.rect.bottom = HEIGHT
             if self.rect.top < 0:
                 self.rect.top = 0
+        else:
+            # TODO use poll() check, so we aren't waiting forever if other
+            # player does not move
+            game_info = conn.recv()
+            # TODO check: is game over, collisions, new missile
+            if self.is_p1:
+                self.rect.y = game_info.p1.<SOMETHING>.y
+                self.rect.x = game_info.p1.<SOMETHING>.x
+                new_direction = game_info.p1.<SOMETHING>.direction
 
-            if new_direction != self.direction:
-                self.rotate(new_direction)
-        else: # Then we are p2
-            # Side-side movement
-            self.speedx = 0
-            keystate = pygame.key.get_pressed()
-            # set in case no key was pressed
-            new_direction = self.direction
-            if keystate[pygame.K_a]:
-                self.speedx = -5
-                new_direction = UDLR.left
-            if keystate[pygame.K_d]:
-                self.speedx = 5
-                new_direction = UDLR.right
+        # Rotate sprite if necessary
+        if new_direction != self.direction:
+            self.rotate(new_direction)
 
-            self.rect.x += self.speedx
-            if self.rect.right > WIDTH:
-                self.rect.right = WIDTH
-            if self.rect.left < 0:
-                self.rect.left = 0
 
-            # Up-down movement
-            self.speedy = 0
-            if keystate[pygame.K_s]:
-                self.speedy = 5
-                new_direction = UDLR.down
-            if keystate[pygame.K_w]:
-                self.speedy = -5
-                new_direction = UDLR.up
 
-            self.rect.y += self.speedy
-            if self.rect.bottom > HEIGHT:
-                self.rect.bottom = HEIGHT
-            if self.rect.top < 0:
-                self.rect.top = 0
+        #else: # Then we are p2
+        #    # Side-side movement
+        #    self.speedx = 0
+        #    keystate = pygame.key.get_pressed()
+        #    # set in case no key was pressed
+        #    new_direction = self.direction
+        #    if keystate[pygame.K_a]:
+        #        self.speedx = -5
+        #        new_direction = UDLR.left
+        #    if keystate[pygame.K_d]:
+        #        self.speedx = 5
+        #        new_direction = UDLR.right
 
-            if new_direction != self.direction:
-                self.rotate(new_direction)
+        #    self.rect.x += self.speedx
+        #    if self.rect.right > WIDTH:
+        #        self.rect.right = WIDTH
+        #    if self.rect.left < 0:
+        #        self.rect.left = 0
+
+        #    # Up-down movement
+        #    self.speedy = 0
+        #    if keystate[pygame.K_s]:
+        #        self.speedy = 5
+        #        new_direction = UDLR.down
+        #    if keystate[pygame.K_w]:
+        #        self.speedy = -5
+        #        new_direction = UDLR.up
+
+        #    self.rect.y += self.speedy
+        #    if self.rect.bottom > HEIGHT:
+        #        self.rect.bottom = HEIGHT
+        #    if self.rect.top < 0:
+        #        self.rect.top = 0
+
+        #    if new_direction != self.direction:
+        #        self.rotate(new_direction)
 
         
         ##TODO: return above info as just x, y? Or whatever else Message obj needs
