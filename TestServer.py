@@ -43,6 +43,7 @@ def main(argv, defaultHost):
     connections = [server]
     writes = []
     broken = []
+    player_num = 0
 
     while True:
 
@@ -99,6 +100,9 @@ def main(argv, defaultHost):
                     connections.append(new_conn)
                     print(len(connections))
                     print("Connected user from ip:{}".format(new_addr))
+                    counter += 1
+                    data = str(counter).encode()
+                    new_conn.sendall(data)
 
 
 if __name__ == '__main__':

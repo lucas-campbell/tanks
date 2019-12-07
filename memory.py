@@ -10,12 +10,12 @@ from Sprites import UDLR
 from enum import Enum
 
 class Player_pos:
-	def __init__(self, pos, direct)
-	self.position = pos
-	self.direction = direct  
+	def __init__(self, pos, direct):
+		self.position = pos
+		self.direction = direct  
 
 class State:
-    __init__(self, _players, _p1_missiles = [], _p2_missiles = [] _game_over = False):
+    def __init__(self, _players, _p1_missiles = [], _p2_missiles = [], _game_over = False):
         self.ps = _players
         self.p1_missiles = _p1_missiles
         self.p2_missiles = _p2_missiles
