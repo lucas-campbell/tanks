@@ -17,9 +17,9 @@ def main(argv, defaultHost):
     else:
         HOST = input('SERVER IP:')
     PORT = 47477      
-    
-    player1 = Player_pos(pos = (200, 0), direct = 180)
-    player2 = Player_pos(pos = (200, 400), direct = 0)
+
+    player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
+    player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
     state = State(player1, player2, _missles = [], _game_over = False)
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -71,6 +71,7 @@ def main(argv, defaultHost):
                         ### DATA MANIP/SCREEN UPDATES HERE ###
                         #Note: updating other player state
                         print(data)
+                        state = data
                         
                         end_msg = False
             except IOError as e:
