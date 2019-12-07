@@ -65,12 +65,12 @@ def main(argv, defaultHost):
                         if sock == connections[1]:
                             #update from player1
                             state.ps[0] = player_data.player
-                            state.p1_missles = player_data.missles
+                            state.missiles[0] = player_data.missles
                             state.game_over = player_data.end
                         elif sock == connections[2]:
                             #update from player2
                             state.ps[1] = player_data.player
-                            state.p2_missles = player_data.missles
+                            state.missles[1]= player_data.missles
                             state.game_over = player_data.end
                         else:
                             print("Uh oh, that's not right..")
