@@ -1,16 +1,6 @@
 import pygame
 from enum import Enum
-
-# Make sure these match the values in Display.py
-WIDTH = 800
-HEIGHT = 600
-
-# define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+from constants import *
 
 class UDLR(Enum):
     up = 0
@@ -31,12 +21,11 @@ class Player(pygame.sprite.Sprite):
         self.original.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         # sets starting position of sprite, TODO change with a ctor param
-        if is_p1:
-            self.rect.centerx = WIDTH / 2
-            self.rect.bottom = HEIGHT - 10
+        self.rect.centery = HEIGHT / 2
+        if self.player_number == 1:
+            self.rect.centerx = 20
         else:
-            self.rect.centerx = WIDTH / 2
-            self.rect.bottom = 10
+            self.rect.centerx = WIDTH - 20
         # starting x/y speeds
         self.speedx = 0
         self.speedy = 0
@@ -45,7 +34,7 @@ class Player(pygame.sprite.Sprite):
         # clear background for sprite
         self.image.set_colorkey(BLACK)
 
-    def update(self, game_state, p1_missiles, p2_missiles):
+    def update(self, game_state):
         """
         Implementation of pygame.sprite.Sprite.update method. Gets called for 
         each sprite in a Group with pygame.sprite.Group.update()
@@ -58,7 +47,7 @@ class Player(pygame.sprite.Sprite):
         # set in case no key was pressed
         new_direction = self.direction
 
-        if is_active_player:
+        if self.is_active_player:
             keystate = pygame.key.get_pressed()
             # Side-side movement
             self.speedx = 0
@@ -96,30 +85,14 @@ class Player(pygame.sprite.Sprite):
 
         else:
             # TODO check: is game over, collisions, new missile
-            if game_state.game_over:
-                if game_state.player_won:
-                    show_win_message()
-                else:
-                    show_lose_message()
-
-            for i in range(1,3):
-                if i != self.player_number:
-                    if not game_info.missiles[i].empty():
-
-
-
-
-            self.rect.center = game_info.p.position
-            new_direction = game_info.p.direction
+            updated_pos = game_state.ps[self.player_number-1]
+            self.rect.center = updated_pos.position
+            new_direction = updated_pos.direction
 
         # Rotate sprite if necessary
         if new_direction != self.direction:
             self.rotate(new_direction)
         
-        ##TODO: return above info as just x, y? Or whatever else Message obj needs
-        # < Code for sending updated position to server > #
-        ##
-
         
     def rotate(self, new_direction):
         """ 
@@ -157,8 +130,15 @@ class Player(pygame.sprite.Sprite):
 
         
 
-#class Obstacle:()
-#    pass #TODO
+class Obstacle(pygame.sprite.Sprite):
+    def __init__(self, r):
+        self.rect = r
+        self.image = pygame.Surface((r.width, r.height))
+        self.image.fill(RED)
+        pygame.sprite.Sprite.__init__(self)
+    def update(self, game_state):
+        pass
+
 
 class Missile(pygame.sprite.Sprite):
     def __init__(self, center, direction):

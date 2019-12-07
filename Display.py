@@ -2,18 +2,9 @@
 import pygame
 import random
 import Sprites # objects for sprite movement
-import memory
-
-WIDTH = 800
-HEIGHT = 600
-FPS = 60
-
-# define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+from memory import *
+from constants import *
+from maps import *
 
 ###########
 # Functions called to command or query the display
@@ -99,6 +90,8 @@ def explode(player, screen, background, background_rect, hits):
     explosion_rect.center = player.rect.center
     screen.blit(explosion, explosion_rect)
     pygame.display.flip()
+    #TODO just add a usleep for 2 seconds instead, then go to reset screen.
+    # Also draw in the other tank
     while True:
         pass
 
@@ -108,6 +101,8 @@ def explode(player, screen, background, background_rect, hits):
 
 def GUI():
     
+#### < TODO Add initial setup with server here > ####
+
 ##################  SETUP   #######################################
     # initialize pygame and create window
     pygame.init()
@@ -139,8 +134,21 @@ def GUI():
             p1_missiles = pygame.sprite.Group()
             p2_missiles = pygame.sprite.Group()
 
+            obstacles = pygame.sprite.Group()
+            obstacle_list = []
+            for obst in map1:
+                new_obst = Sprites.Obstacle(obst)
+                obstacle_list.append(new_obst)
+            for obst in obstacle_list:
+                obstacles.add(obst)
+                sprites.add(obst)
 
-        player = player_1
+        #TODO change given info from server
+        # Aliases, may just name them appropriately above
+        player = player1
+        other_player = player2
+        my_missiles = p1_missiles
+        their_missiles = p2_missiles
         # keep loop running at the right speed
         clock.tick(FPS)
         # Process input (events)
@@ -157,8 +165,24 @@ def GUI():
 
         # Update: update sprite positions, send info to server/ get back
         # confirmations. TODO add server communication
-        game_state = State() #TODO get from Server
-        sprites.update(game_state, p1_missiles, p2_missiles)
+        p1_pos = Player_pos(player1.rect.center, player1.direction)
+        p2_pos = Player_pos(player2.rect.center, player2.direction)
+        game_state = State([p1_pos, p2_pos]) #TODO get from Server
+        if game_state.game_over:
+            #TODO implement messages
+            pass
+            #if game_state.player_won:
+            #    show_win_message()
+            #else:
+            #    show_lose_message()
+        new_enemy_missiles = game_state.missiles[other_player.player_number-1]
+        if len(new_enemy_missiles) > 0:
+            for m in new_enemy_missiles:
+                their_missiles.add(m)
+                
+        sprites.update(game_state)
+
+        #TODO obstacle/missile collisions
 
         p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, False)
         p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, False)
