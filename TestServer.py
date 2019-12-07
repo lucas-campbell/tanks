@@ -26,19 +26,12 @@ def main(argv, defaultHost):
     PORT = 47477
     
     #init server state conditions
-    player1 = Player_pos(pos = (200, 0), direct = 180)
-    player2 = Player_pos(pos = (200, 400), direct = 0)
-    state = State(player1, player2, _missles = [], _game_over = False)
+    player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
+    player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
+    players = [player1, player2]
+    state = State(players, _p1_missles = [], _p2_missles = [], _game_over = False)
     sample_msg = Memory(player1, new_missles = [], game_over = False, p_won = False)
 
-    # TEST ARENA #
-    #obstacleTiles = [Tile(2,4), Tile(3,3), Tile(0,0), Tile(1,7)]
-    #testArena = Arena(obstacleTiles = obstacleTiles)
-    #for t in testArena.tiles:
-    #    if t.is_obstacle:
-    #        print(t.x, t.y, t.is_obstacle)
-    
-    #print(sys.getsizeof(data))
     # CONNECTION SETUP W/ SOCKETS #
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -63,32 +56,30 @@ def main(argv, defaultHost):
                         # Get message data
                         header, data = getData(sock)
 
-                        if sock == connections[1]:
-                            #update player1
-
-                        elif sock == connections[2]:
-                            #update player2
-                            
-                        else:
-                            print("Uh oh, that's no right")
-                            exit() 
                         ###MAKE MESSAGE CHANEGS/DATA UPDATES HERE###
-                        oldInfo = pickle.loads(data)
+                        player_data = pickle.loads(data)
                         # Notes:
                             #Each tank should send ONLY their own info
                             #Prevents one tank from updating another tank's position
-                        newData = oldInfo #change oldInfo and store it in newData
+                        if sock == connections[1]:
+                            #update from player1
+                            state.ps[0] = player_data.player
+                            state.p1_missles = player_data.missles
+                            state.game_over = player_data.end
+                        elif sock == connections[2]:
+                            #update from player2
+                            state.ps[1] = player_data.player
+                            state.p2_missles = player_data.missles
+                            state.game_over = player_data.end
+                        else:
+                            print("Uh oh, that's not right..")
+                            exit() 
                         print("Sending Data")
 
-                        #print("Connections:", len(connections))
-                        #print("Reading Sockets:", len(read_socks))
-                        #for tsock in read_socks:
-                        #    print(tsock)    
-                        #print("Writing Sockets:", len(write_socks))
                         # Client is sending updated information
                         for client in connections:
                             if client != server and client != sock: 
-                                update = pickle.dumps(newData)
+                                update = pickle.dumps(state)
                                 msg_len = len(update)
                                 pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
                                 update = bytes(pack_header, 'utf-8')+update
