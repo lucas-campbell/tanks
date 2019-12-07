@@ -18,16 +18,16 @@ class Player_pos:
 
 #reperesents server state
 class State:
-    __init__(self, _player1, _player2, _missles = [], _game_over = False):
+    __init__(self, _player1, _player2, _missiles = [], _game_over = False):
         self.player1 = _player1 
         self.player2 = _player2
-        self.missles = _missles
+        self.missiles = _missiles
         self.game_over = _game_over
 
 #removed player 2	
 class Memory:
-	def __init__(self, player, new_missles = None, game_over = False, p_won = False):
+	def __init__(self, player, new_missiles = None, game_over = False, p_won = False):
 		self.p = player
 		self.end = game_over
 		self.player_won = p_won
-		self.missles = new_missles
+		self.missiles = new_missiles
