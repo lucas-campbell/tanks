@@ -26,8 +26,8 @@ def main(argv, defaultHost):
     PORT = 47477
     
     #init server state conditions
-    player1 = Player_pos(pos = (200, 0), direct = 180)
-    player2 = Player_pos(pos = (200, 400), direct = 0)
+    player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
+    player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
     players = [player1, player2]
     state = State(players, _p1_missles = [], _p2_missles = [], _game_over = False)
     sample_msg = Memory(player1, new_missles = [], game_over = False, p_won = False)
@@ -76,11 +76,6 @@ def main(argv, defaultHost):
                             exit() 
                         print("Sending Data")
 
-                        #print("Connections:", len(connections))
-                        #print("Reading Sockets:", len(read_socks))
-                        #for tsock in read_socks:
-                        #    print(tsock)    
-                        #print("Writing Sockets:", len(write_socks))
                         # Client is sending updated information
                         for client in connections:
                             if client != server and client != sock: 
