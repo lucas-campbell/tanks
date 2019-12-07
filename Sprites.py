@@ -19,9 +19,8 @@ class UDLR(Enum):
     right = 3
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, image_file_path, is_p1, is_active_player):
-        self.is_p1 = is_p1
-        self.is_active_player = is_active_player
+    def __init__(self, image_file_path, player_number):
+        self.player_number
         pygame.sprite.Sprite.__init__(self)
         # Get image and corresponding rectangle
         self.image = pygame.image.load(image_file_path).convert()
@@ -45,7 +44,7 @@ class Player(pygame.sprite.Sprite):
         # clear background for sprite
         self.image.set_colorkey(BLACK)
 
-    def update(self, conn):
+    def update(self, game_state):
         """
         Implementation of pygame.sprite.Sprite.update method. Gets called for 
         each sprite in a Group with pygame.sprite.Group.update()
@@ -53,9 +52,6 @@ class Player(pygame.sprite.Sprite):
         middleman process. Calculates new position & waits for update on other
         tank's position, then updates display accordingly.
         """
-        # TODO possibly error checking done by server side instead of here.
-        # But, may be faster to do here anyways.
-        
         ### Process User Input ###
 
         # set in case no key was pressed
@@ -94,15 +90,24 @@ class Player(pygame.sprite.Sprite):
                 self.rect.bottom = HEIGHT
             if self.rect.top < 0:
                 self.rect.top = 0
+
+            #TODO obstacle collision checking
+
         else:
             # TODO use poll() check, so we aren't waiting forever if other
             # player does not move
             game_info = conn.recv()
             # TODO check: is game over, collisions, new missile
-            if self.is_p1:
-                self.rect.y = game_info.p1.<SOMETHING>.y
-                self.rect.x = game_info.p1.<SOMETHING>.x
-                new_direction = game_info.p1.<SOMETHING>.direction
+            if game_info.game_over:
+                if game_info.player_won:
+                    we_win()
+                else:
+                    we_lose()
+            if !game_info.new_missiles.empty():
+
+
+            self.rect.center = game_info.p.position
+            new_direction = game_info.p.direction
 
         # Rotate sprite if necessary
         if new_direction != self.direction:

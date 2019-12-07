@@ -159,6 +159,7 @@ def GUI(conn, active_is_p1):
 
         hits = pygame.hits.collisions()
         if hits()
+        #TODO fill in
         conn.send(Memory())
 
         p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, False)
