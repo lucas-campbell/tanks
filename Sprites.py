@@ -19,8 +19,9 @@ class UDLR(Enum):
     right = 3
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, image_file_path, player_number):
-        self.player_number
+    def __init__(self, image_file_path, player_number, is_active_player):
+        self.player_number = player_number
+        self.is_active_player = is_active_player
         pygame.sprite.Sprite.__init__(self)
         # Get image and corresponding rectangle
         self.image = pygame.image.load(image_file_path).convert()
@@ -44,7 +45,7 @@ class Player(pygame.sprite.Sprite):
         # clear background for sprite
         self.image.set_colorkey(BLACK)
 
-    def update(self, game_state):
+    def update(self, game_state, p1_missiles, p2_missiles):
         """
         Implementation of pygame.sprite.Sprite.update method. Gets called for 
         each sprite in a Group with pygame.sprite.Group.update()
@@ -94,17 +95,18 @@ class Player(pygame.sprite.Sprite):
             #TODO obstacle collision checking
 
         else:
-            # TODO use poll() check, so we aren't waiting forever if other
-            # player does not move
-            game_info = conn.recv()
             # TODO check: is game over, collisions, new missile
-            if game_info.game_over:
-                if game_info.player_won:
-                    we_win()
+            if game_state.game_over:
+                if game_state.player_won:
+                    show_win_message()
                 else:
-                    we_lose()
-            if not game_info.new_missiles.empty():
-                pass
+                    show_lose_message()
+
+            for i in range(1,3):
+                if i != self.player_number:
+                    if not game_info.missiles[i].empty():
+
+
 
 
             self.rect.center = game_info.p.position
@@ -113,60 +115,12 @@ class Player(pygame.sprite.Sprite):
         # Rotate sprite if necessary
         if new_direction != self.direction:
             self.rotate(new_direction)
-
-
-
-        #else: # Then we are p2
-        #    # Side-side movement
-        #    self.speedx = 0
-        #    keystate = pygame.key.get_pressed()
-        #    # set in case no key was pressed
-        #    new_direction = self.direction
-        #    if keystate[pygame.K_a]:
-        #        self.speedx = -5
-        #        new_direction = UDLR.left
-        #    if keystate[pygame.K_d]:
-        #        self.speedx = 5
-        #        new_direction = UDLR.right
-
-        #    self.rect.x += self.speedx
-        #    if self.rect.right > WIDTH:
-        #        self.rect.right = WIDTH
-        #    if self.rect.left < 0:
-        #        self.rect.left = 0
-
-        #    # Up-down movement
-        #    self.speedy = 0
-        #    if keystate[pygame.K_s]:
-        #        self.speedy = 5
-        #        new_direction = UDLR.down
-        #    if keystate[pygame.K_w]:
-        #        self.speedy = -5
-        #        new_direction = UDLR.up
-
-        #    self.rect.y += self.speedy
-        #    if self.rect.bottom > HEIGHT:
-        #        self.rect.bottom = HEIGHT
-        #    if self.rect.top < 0:
-        #        self.rect.top = 0
-
-        #    if new_direction != self.direction:
-        #        self.rotate(new_direction)
-
         
         ##TODO: return above info as just x, y? Or whatever else Message obj needs
         # < Code for sending updated position to server > #
         ##
 
         
-    def do_update(self):
-        #TODO set updated variables to the new values, aka split update()
-        # up into send_update() and do_update()
-        pass
-
-    def send_update(self):
-        pass
-
     def rotate(self, new_direction):
         """ 
         Sets image to face the desired direction. NOTE: Assumes square sprites

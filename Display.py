@@ -130,8 +130,8 @@ def GUI():
 
             # Create players and their sprites
             sprites = pygame.sprite.Group()
-            player1 = Sprites.Player('high_res_blue_tank.png', 1)
-            player2 = Sprites.Player('high_res_green_tank.png', 2)
+            player1 = Sprites.Player('high_res_blue_tank.png', 1, True)
+            player2 = Sprites.Player('high_res_green_tank.png', 2, False)
             sprites.add(player1) 
             sprites.add(player2) 
             # Create group of missiles to keep track of hits
@@ -140,6 +140,7 @@ def GUI():
             p2_missiles = pygame.sprite.Group()
 
 
+        player = player_1
         # keep loop running at the right speed
         clock.tick(FPS)
         # Process input (events)
@@ -157,12 +158,7 @@ def GUI():
         # Update: update sprite positions, send info to server/ get back
         # confirmations. TODO add server communication
         game_state = State() #TODO get from Server
-        sprites.update(game_state)
-
-        #hits = pygame.hits.collisions()
-        #if hits()
-        ##TODO fill in
-        #conn.send(Memory())
+        sprites.update(game_state, p1_missiles, p2_missiles)
 
         p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, False)
         p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, False)
