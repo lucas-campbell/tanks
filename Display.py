@@ -2,6 +2,7 @@
 import pygame
 import random
 import Sprites # objects for sprite movement
+import memory
 
 WIDTH = 800
 HEIGHT = 600
@@ -147,20 +148,21 @@ def GUI(conn, active_is_p1):
             if event.type == pygame.QUIT:
                 running = False 
             elif event.type == pygame.KEYDOWN:
-                # TODO change these to one player, just use spacebar
-                if event.key == pygame.K_RSHIFT:
-                    player1.shoot(sprites, p1_missiles)
-                elif event.key == pygame.K_LSHIFT:
-                    player2.shoot(sprites, p2_missiles)
+                if event.key == pygame.K_SPACE
+                #TODO determine which player we are
+                player.shoot()
+
+        #####  < CODE FOR COMMS WITH SERVER GOES HERE > #####
 
         # Update: update sprite positions, send info to server/ get back
         # confirmations. TODO add server communication
-        sprites.update(conn)
+        game_state = State() #TODO get from Server
+        sprites.update(game_state)
 
-        hits = pygame.hits.collisions()
-        if hits()
-        #TODO fill in
-        conn.send(Memory())
+        #hits = pygame.hits.collisions()
+        #if hits()
+        ##TODO fill in
+        #conn.send(Memory())
 
         p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, False)
         p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, False)
