@@ -15,9 +15,9 @@ class Player_pos:
 		self.direction = direct  
 
 class State:
-    def __init__(self, _players, _missiles, _game_over = False):
+    def __init__(self, _players, _missles = [], _game_over = False):
         self.ps = _players
-        self.missiles = _missiles
+        self.missiles = _missles
         self.game_over = _game_over
 
 class Memory:

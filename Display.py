@@ -106,7 +106,7 @@ def explode(player, screen, background, background_rect, hits):
 
 
 
-def GUI(conn, active_is_p1):
+def GUI():
     
 ##################  SETUP   #######################################
     # initialize pygame and create window
@@ -130,8 +130,8 @@ def GUI(conn, active_is_p1):
 
             # Create players and their sprites
             sprites = pygame.sprite.Group()
-            player1 = Sprites.Player('high_res_blue_tank.png', is_p1=True, active_is_p1)
-            player2 = Sprites.Player('high_res_green_tank.png', is_p1=False, !active_is_p1)
+            player1 = Sprites.Player('high_res_blue_tank.png', 1)
+            player2 = Sprites.Player('high_res_green_tank.png', 2)
             sprites.add(player1) 
             sprites.add(player2) 
             # Create group of missiles to keep track of hits
@@ -148,9 +148,9 @@ def GUI(conn, active_is_p1):
             if event.type == pygame.QUIT:
                 running = False 
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE
-                #TODO determine which player we are
-                player.shoot()
+                if event.key == pygame.K_SPACE:
+                    #TODO determine which player we are
+                    player.shoot()
 
         #####  < CODE FOR COMMS WITH SERVER GOES HERE > #####
 
@@ -187,4 +187,4 @@ def GUI(conn, active_is_p1):
     exit(0)
 
 if __name__ == "__main__":
-    main()
+    GUI()

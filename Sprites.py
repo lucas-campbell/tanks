@@ -103,7 +103,8 @@ class Player(pygame.sprite.Sprite):
                     we_win()
                 else:
                     we_lose()
-            if !game_info.new_missiles.empty():
+            if not game_info.new_missiles.empty():
+                pass
 
 
             self.rect.center = game_info.p.position
