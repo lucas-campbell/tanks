@@ -58,9 +58,6 @@ def main(argv, defaultHost):
                         # Get message data
                         header, data = getData(sock)
 
-                        if header == -1:
-
-
                         ###MAKE MESSAGE CHANEGS/DATA UPDATES HERE###
                         player_data = pickle.loads(data)
                         print(player_data)
