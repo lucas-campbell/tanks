@@ -30,8 +30,8 @@ class Player(pygame.sprite.Sprite):
         #self.speedy = 0
         ## starting direction
         #self.direction = UDLR.up
-        self.centerx = center[0]
-        self.centery = center[1]
+        self.rect.centerx = center[0]
+        self.rect.centery = center[1]
         self.direction = direction
         # clear background for sprite
         self.image.set_colorkey(BLACK)

@@ -26,8 +26,8 @@ def main(argv, defaultHost):
     PORT = 47477
     
     #init server state conditions
-    player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
-    player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
+    player1 = Player_pos(pos = (20, 400), direct = UDLR.down)
+    player2 = Player_pos(pos = (800-20, 400), direct = UDLR.up)
     players = [player1, player2]
     state = State(players, [[],[]], _game_over = False)
     sample_msg = Memory(player1, new_missiles = [], game_over = False, p_won = False)
@@ -68,14 +68,14 @@ def main(argv, defaultHost):
                             #update from player1
                             state.ps[0] = player_data.p
                             state.missiles[0] = player_data.missiles
-                            if state.game_over == False:
-                                state.game_over = player_data.end
+                            state.game_over = player_data.end
+                            print("p1 position: ", player_data.p.position)
                         elif sock == connections[2]:
                             #update from player2
                             state.ps[1] = player_data.p
                             state.missiles[1]= player_data.missiles
-                            if state.game_over == False:
-                                state.game_over = player_data.end
+                            state.game_over = player_data.end
+                            print("p2 position: ", player_data.p.position)
                         else:
                             print("Uh oh, that's not right..")
                             exit() 

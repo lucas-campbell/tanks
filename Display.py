@@ -12,7 +12,7 @@ def show_reset_screen(screen, background, background_rect, clock, won=False, los
     """
     Displays message to user that they have lost or won
     """
-    pygame.init()
+    #pygame.init()
     screen.blit(background, background_rect)
     if won:
         draw_text(screen, "You Win!!", 32, WIDTH/2, HEIGHT/4)
@@ -51,7 +51,7 @@ def draw_text(surf, text, size, x, y):
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
 
-def explode(exploding_player, client_player, sprites, screen, background, background_rect):
+def explode(exploding_player, sprites, screen, background, background_rect):
     # Create explosion in correct place
     explosion = pygame.image.load('explosion.png').convert()
     explosion = pygame.transform.scale(explosion, exploding_player.rect.size)
@@ -90,8 +90,8 @@ def GUI():
     HOST = input('SERVER IP:')
     PORT = 47477      
     player_num = 0
-    player1_pos = Player_pos(pos = (200, 0), direct = UDLR.down)
-    player2_pos = Player_pos(pos = (200, 400), direct = UDLR.up)
+    player1_pos = Player_pos(pos = (20, 400), direct = UDLR.down)
+    player2_pos = Player_pos(pos = (800-20, 400), direct = UDLR.up)
     players = [player1_pos, player2_pos]
     state = State(players, [[],[]], False) 
 
@@ -248,14 +248,17 @@ def GUI():
                 sys.exit()
 
         game_state = state
-        if game_state.game_over:
-            if game_state.p_won == player_num:
-                explode(player1, player, sprites, screen, background, background_rect)
-                game_over = True
-                if other_player.player_number == 1:
-                    won = True
-                else:
-                    lost = True
+        #if game_state.game_over:
+        #    if game_state.player_won == player_num:
+        #        print("received explosion")
+        #        explode(other_player, sprites, screen, background, background_rect)
+        #        game_over = True
+        #        won = True
+        #    else:
+        #        explode(player, sprites, screen, background, background_rect)
+        #        game_over = True
+        #        lost = True
+        #else:
         new_enemy_missiles = game_state.missiles[other_player.player_number-1]
         if len(new_enemy_missiles) > 0:
             for m in new_enemy_missiles:
@@ -263,7 +266,7 @@ def GUI():
                 their_missiles.add(new_enemy_missile)
                 sprites.add(new_enemy_missile)
 
-                
+            
         sprites.update(game_state, obstacles)
 
         #TODO obstacle/missile collisions
@@ -274,19 +277,37 @@ def GUI():
         p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, dokill=True)
 
         if len(p1_hit) > 0:
-            explode(player1, player, sprites, screen, background, background_rect)
+            print("calculated explosion here")
+            explode(player1, sprites, screen, background, background_rect)
             game_over = True
             if other_player.player_number == 1:
                 won = True
             else:
                 lost = True
+
+           # player_data = Memory(players[player_num-1], my_new_missiles, game_over, won)
+           # data = pickle.dumps(player_data)
+           # msg_len = str(len(data))
+           # pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
+           # data = bytes(pack_header, 'utf-8')+data
+           # client.sendall(data)
+
+
         elif len(p2_hit) > 0:
-            explode(player2, player, sprites, screen, background, background_rect)
+            print("calculated explosion here")
+            explode(player2, sprites, screen, background, background_rect)
             game_over = True
             if other_player.player_number == 1:
                 lost = True
             else:
                 won = True
+
+           # player_data = Memory(players[player_num-1], my_new_missiles, game_over, won)
+           # data = pickle.dumps(player_data)
+           # msg_len = str(len(data))
+           # pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
+           # data = bytes(pack_header, 'utf-8')+data
+           # client.sendall(data)
 
         if game_over:
             sleep(2)
