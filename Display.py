@@ -7,6 +7,7 @@ from memory import *
 from constants import *
 from maps import *
 from time import sleep
+import copy
 
 def show_reset_screen(screen, background, background_rect, clock, won=False, lost=False):
     """
@@ -90,8 +91,12 @@ def GUI():
     HOST = input('SERVER IP:')
     PORT = 47477      
     player_num = 0
-    player1_pos = Player_pos(pos = (20, 400), direct = UDLR.down)
-    player2_pos = Player_pos(pos = (800-20, 400), direct = UDLR.up)
+    player1_start = Player_pos(pos = (20, 400), direct = UDLR.up)
+    player2_start = Player_pos(pos = (800-20, 400), direct = UDLR.up)
+    player1_pos = copy.deepcopy(player1_start)
+    player2_pos = copy.deepcopy(player2_start)
+    #player1_pos = Player_pos(pos = (20, 400), direct = UDLR.down)
+    #player2_pos = Player_pos(pos = (800-20, 400), direct = UDLR.up)
     players = [player1_pos, player2_pos]
     state = State(players, [[],[]], False) 
 
@@ -134,9 +139,9 @@ def GUI():
             client_is_p1 = (player_num == 1)
 
             player1 = Sprites.Player('high_res_blue_tank.png', 1, client_is_p1,
-                                    player1_pos.position, player1_pos.direction)
+                                    player1_start.position, player1_pos.direction)
             player2 = Sprites.Player('high_res_green_tank.png', 2, not client_is_p1,
-                                    player2_pos.position, player2_pos.direction)
+                                    player2_start.position, player2_pos.direction)
             sprites.add(player1) 
             sprites.add(player2) 
             # Create group of missiles to keep track of hits
@@ -280,8 +285,8 @@ def GUI():
 
         #TODO tank collision --> tie game
 
-        p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, dokill=True)
-        p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, dokill=True)
+        p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, dokill=False)
+        p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, dokill=False)
 
         if len(p1_hit) > 0:
             print("calculated explosion here")
@@ -293,12 +298,12 @@ def GUI():
             else:
                 lost = True
 
-           # player_data = Memory(players[player_num-1], my_new_missiles, game_over, won)
-           # data = pickle.dumps(player_data)
-           # msg_len = str(len(data))
-           # pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
-           # data = bytes(pack_header, 'utf-8')+data
-           # client.sendall(data)
+            player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready=False)
+            data = pickle.dumps(player_data)
+            msg_len = str(len(data))
+            pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
+            data = bytes(pack_header, 'utf-8')+data
+            client.sendall(data)
 
 
         elif len(p2_hit) > 0:
@@ -311,12 +316,12 @@ def GUI():
             else:
                 won = True
 
-           # player_data = Memory(players[player_num-1], my_new_missiles, game_over, won)
-           # data = pickle.dumps(player_data)
-           # msg_len = str(len(data))
-           # pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
-           # data = bytes(pack_header, 'utf-8')+data
-           # client.sendall(data)
+            player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready=False)
+            data = pickle.dumps(player_data)
+            msg_len = str(len(data))
+            pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
+            data = bytes(pack_header, 'utf-8')+data
+            client.sendall(data)
 
         if game_over:
             sleep(2)
