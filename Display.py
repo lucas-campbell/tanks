@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import pygame
 import random
+import errno
 import Sprites # objects for sprite movement
 from memory import *
 from constants import *
@@ -95,7 +96,7 @@ def GUI():
     state = State(players, [[],[]], False) 
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #client.setblocking(0)
+    client.setblocking(0)
     client.connect((HOST, PORT))
     is_connected = False
 
@@ -107,14 +108,18 @@ def GUI():
     won = False
     lost = False
     while running:
-
-        if not is_connected:
-            print("Connected to server at IP:", HOST)
-            data = client.recv(HEADERSIZE)
-            player_num = int(data.decode())
-            print("Player num:")
-            print(player_num)
-            is_connected = True
+        try:
+            if not is_connected:
+                print("Connected to server at IP:", HOST)
+                data = client.recv(HEADERSIZE)
+                player_num = int(data.decode())
+                print("Player num:", player_num)
+                is_connected = True
+        except IOError as e:
+                if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
+                    print('Reading error: {}'.format(str(e)))
+                    sys.exit()
+                continue
 
         if game_over:
             show_reset_screen(screen, background, background_rect, clock, won, lost)
@@ -230,6 +235,11 @@ def GUI():
                         state = data
                         
                         end_msg = False
+            except IOError as e:
+                if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
+                    print('Reading error: {}'.format(str(e)))
+                    sys.exit()
+                continue
             except Exception as e:
                 print('Hit error: {}'.format(str(e)))
                 sys.exit()
