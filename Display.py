@@ -112,6 +112,7 @@ def GUI():
             print("Connected to server at IP:", HOST)
             data = client.recv(HEADERSIZE)
             player_num = int(data.decode())
+            print("Player num:")
             print(player_num)
             is_connected = True
 
@@ -146,12 +147,14 @@ def GUI():
             #TODO change given info from server
             # Aliases, may just name them appropriately above
             if player_num == 1:
+                print("I am player 1")
                 player = player1
                 other_player = player2
                 my_pos = player1_pos
                 my_missiles = p1_missiles
                 their_missiles = p2_missiles
             else:
+                print("I am player 2")
                 player = player2
                 other_player = player1
                 my_pos = player2_pos
@@ -242,7 +245,7 @@ def GUI():
         new_enemy_missiles = game_state.missiles[other_player.player_number-1]
         if len(new_enemy_missiles) > 0:
             for m in new_enemy_missiles:
-                their_missiles.add(m)
+                their_missiles.add(Sprites.Missile(m[0], m[1]))
                 
         sprites.update(game_state, obstacles)
 
