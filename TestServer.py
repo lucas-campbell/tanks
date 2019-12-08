@@ -60,7 +60,7 @@ def main(argv, defaultHost):
 
                         ###MAKE MESSAGE CHANEGS/DATA UPDATES HERE###
                         player_data = pickle.loads(data)
-                        print(player_data)
+                        #print(player_data)
                         # Notes:
                             #Each tank should send ONLY their own info
                             #Prevents one tank from updating another tank's position
@@ -79,7 +79,7 @@ def main(argv, defaultHost):
                         else:
                             print("Uh oh, that's not right..")
                             exit() 
-                        print("Sending Data")
+                        #print("Sending Data")
 
                         # Client is sending updated information
                         for client in connections:
@@ -89,7 +89,7 @@ def main(argv, defaultHost):
                                 pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
                                 update = bytes(pack_header, 'utf-8')+update
                                 client.sendall(update)
-                                print("Sent")
+                                #print("Sent")
             except Exception:
                 for conn in connections:
                     conn.close()

@@ -96,8 +96,8 @@ def GUI():
     state = State(players, [[],[]], False) 
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.setblocking(0)
     client.connect((HOST, PORT))
+    client.setblocking(0)
     is_connected = False
 
 
@@ -129,9 +129,12 @@ def GUI():
 
             # Create players and their sprites
             sprites = pygame.sprite.Group()
-            player1 = Sprites.Player('high_res_blue_tank.png', 1, True,
+            
+            client_is_p1 = (player_num == 1)
+
+            player1 = Sprites.Player('high_res_blue_tank.png', 1, client_is_p1,
                                     player1_pos.position, player1_pos.direction)
-            player2 = Sprites.Player('high_res_green_tank.png', 2, False,
+            player2 = Sprites.Player('high_res_green_tank.png', 2, not client_is_p1,
                                     player2_pos.position, player2_pos.direction)
             sprites.add(player1) 
             sprites.add(player2) 
@@ -227,7 +230,7 @@ def GUI():
                     #print(len(full_msg)), testing
 
                     if len(full_msg) - HEADERSIZE == msg_length:
-                        print("Got message")
+                        #print("Got message")
                         data = pickle.loads(full_msg[HEADERSIZE:])
                         ### DATA MANIP/SCREEN UPDATES HERE ###
                         #Note: updating other player state
@@ -255,7 +258,10 @@ def GUI():
         new_enemy_missiles = game_state.missiles[other_player.player_number-1]
         if len(new_enemy_missiles) > 0:
             for m in new_enemy_missiles:
-                their_missiles.add(Sprites.Missile(m[0], m[1]))
+                new_enemy_missile = Sprites.Missile(m[0], m[1])
+                their_missiles.add(new_enemy_missile)
+                sprites.add(new_enemy_missile)
+
                 
         sprites.update(game_state, obstacles)
 
