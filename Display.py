@@ -134,12 +134,14 @@ def GUI():
                 obstacles.add(obst)
                 sprites.add(obst)
 
-        #TODO change given info from server
-        # Aliases, may just name them appropriately above
-        player = player1
-        other_player = player2
-        my_missiles = p1_missiles
-        their_missiles = p2_missiles
+            #TODO change given info from server
+            # Aliases, may just name them appropriately above
+            player = player1
+            other_player = player2
+            my_missiles = p1_missiles
+            their_missiles = p2_missiles
+            #### End Setup Loop ####
+
         # keep loop running at the right speed
         clock.tick(FPS)
         # Process input (events)
@@ -214,7 +216,8 @@ def GUI():
 
         p1_pos = Player_pos(player1.rect.center, player1.direction)
         p2_pos = Player_pos(player2.rect.center, player2.direction)
-        game_state = State([p1_pos, p2_pos]) #TODO get from Server
+        game_state = state
+        #game_state = State([p1_pos, p2_pos]) #TODO get from Server
         if game_state.game_over:
             #TODO implement messages
             pass
