@@ -85,18 +85,18 @@ def GUI():
 
 
 ############## CLIENT STATE SETUP #################################
-HOST = input('SERVER IP:')
-PORT = 47477      
-player_num = 0
-player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
-player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
-players = [player1, player2]
-state = State(players, [[],[]], False) 
+    HOST = input('SERVER IP:')
+    PORT = 47477      
+    player_num = 0
+    player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
+    player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
+    players = [player1, player2]
+    state = State(players, [[],[]], False) 
 
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#client.setblocking(0)
-client.connect((HOST, PORT))
-is_connected = False
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    #client.setblocking(0)
+    client.connect((HOST, PORT))
+    is_connected = False
 
 
 ################## GAME LOOP ######################################
