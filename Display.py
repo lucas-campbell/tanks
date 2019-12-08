@@ -192,10 +192,10 @@ def GUI():
 
         ##### CLIENT COMM CODE #####
         if not is_connected:
-            print("Connected to server at IP:", HOST)
             data = client.recv(HEADERSIZE)
             player_num = int(data.decode())
-            print(player_num)
+            print("Connected to server at IP:", HOST)
+            print("Player Number:", player_num)
             is_connected = True
         else:
             #send information here
