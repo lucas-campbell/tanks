@@ -123,8 +123,10 @@ def GUI():
 
             # Create players and their sprites
             sprites = pygame.sprite.Group()
-            player1 = Sprites.Player('high_res_blue_tank.png', 1, True)
-            player2 = Sprites.Player('high_res_green_tank.png', 2, False)
+            player1 = Sprites.Player('high_res_blue_tank.png', 1, True,
+                                    player1_pos.position, player1_pos.direction)
+            player2 = Sprites.Player('high_res_green_tank.png', 2, False,
+                                    player2_pos.position, player2_pos.direction)
             sprites.add(player1) 
             sprites.add(player2) 
             # Create group of missiles to keep track of hits
@@ -174,8 +176,8 @@ def GUI():
         # Update: update sprite positions, send info to server and
         # receive info on other tank's position
 
-        my_pos.position = player1.rect.center
-        my_pos.direction = player1.direction
+        my_pos.position = (player.rect.centerx, player.rect.centery)
+        my_pos.direction = player.direction
 
         ##### CLIENT COMM CODE #####
         if not is_connected:

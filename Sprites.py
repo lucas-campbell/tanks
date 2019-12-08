@@ -9,7 +9,7 @@ class UDLR(Enum):
     right = 3
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, image_file_path, player_number, is_active_player):
+    def __init__(self, image_file_path, player_number, is_active_player, center, direction):
         self.player_number = player_number
         self.is_active_player = is_active_player
         pygame.sprite.Sprite.__init__(self)
@@ -20,16 +20,19 @@ class Player(pygame.sprite.Sprite):
         self.original.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         # sets starting position of sprite, TODO change with a ctor param based on which map
-        self.rect.centery = HEIGHT / 2
-        if self.player_number == 1:
-            self.rect.centerx = 20
-        else:
-            self.rect.centerx = WIDTH - 20
-        # starting x/y speeds
-        self.speedx = 0
-        self.speedy = 0
-        # starting direction
-        self.direction = UDLR.up
+        #self.rect.centery = HEIGHT / 2
+        #if self.player_number == 1:
+        #    self.rect.centerx = 20
+        #else:
+        #    self.rect.centerx = WIDTH - 20
+        ## starting x/y speeds
+        #self.speedx = 0
+        #self.speedy = 0
+        ## starting direction
+        #self.direction = UDLR.up
+        self.centerx = center[0]
+        self.centery = center[1]
+        self.direction = direction
         # clear background for sprite
         self.image.set_colorkey(BLACK)
 
