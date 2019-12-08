@@ -83,6 +83,22 @@ def GUI():
     background_rect = background.get_rect()
     clock = pygame.time.Clock()
 
+
+############## CLIENT STATE SETUP #################################
+HOST = input('SERVER IP:')
+PORT = 47477      
+player_num = 0
+player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
+player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
+players = [player1, player2]
+state = State(players, [[],[]], False) 
+
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#client.setblocking(0)
+client.connect((HOST, PORT))
+is_connected = False
+
+
 ################## GAME LOOP ######################################
     running = True
     # Start out with reset screen
@@ -139,6 +155,62 @@ def GUI():
 
         # Update: update sprite positions, send info to server/ get back
         # confirmations. TODO add server communication
+
+        ##### CLIENT COMM CODE #####
+        if not is_connected:
+            print("Connected to server at IP:", HOST)
+            data = client.recv(HEADERSIZE)
+            player_num = int(data.decode())
+            print(player_num)
+            is_connected = True
+        else:
+            #send information here
+            try:
+                player_data = Memory(players[player_num-1], [], False, False)
+                data = pickle.dumps(player_data)
+                msg_len = str(len(data))
+                pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
+                data = bytes(pack_header, 'utf-8')+data
+                client.sendall(data)
+
+                #### wait for update here ###
+                full_msg = b''
+                new_msg = True
+                end_msg = True
+
+                while end_msg:
+                    msg = client.recv(HEADERSIZE)
+
+                    if not len(msg):
+                        continue
+                        #print('Connection closed by the server')
+                        #exit()
+
+                    if new_msg:
+                        msg_header = msg[:HEADERSIZE]
+                        msg_length = int(msg_header)
+                        new_msg = False
+
+                    full_msg += msg
+
+                    #print(len(full_msg)), testing
+
+                    if len(full_msg) - HEADERSIZE == msg_length:
+                        print("Got message")
+                        data = pickle.loads(full_msg[HEADERSIZE:])
+                        ### DATA MANIP/SCREEN UPDATES HERE ###
+                        #Note: updating other player state
+                        #print(data)
+                        state = data
+                        
+                        end_msg = False
+            except Exception as e:
+                print('Hit error: {}'.format(str(e)))
+                sys.exit()
+
+
+
+
         p1_pos = Player_pos(player1.rect.center, player1.direction)
         p2_pos = Player_pos(player2.rect.center, player2.direction)
         game_state = State([p1_pos, p2_pos]) #TODO get from Server

@@ -20,7 +20,8 @@ def main(argv, defaultHost):
     player_num = 0
     player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
     player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
-    state = State(player1, player2, _missles = [], _game_over = False)
+    players = [player1, player2]
+    state = State(players, [[],[]], False)
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     #client.setblocking(0)
@@ -32,14 +33,15 @@ def main(argv, defaultHost):
     while True:
         if not is_connected:
             print("Connected to server at IP:", HOST)
-            data = recv(HEADERSIZE)
+            data = client.recv(HEADERSIZE)
             player_num = int(data.decode())
+            print(player_num)
             is_connected = True
         else:
             #send information here
             try:
-                #data = Message()
-                data = pickle.dumps('temp input')
+                player_data = Memory(players[player_num-1], [], False, False)
+                data = pickle.dumps(player_data)
                 msg_len = str(len(data))
                 pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
                 data = bytes(pack_header, 'utf-8')+data
@@ -72,16 +74,14 @@ def main(argv, defaultHost):
                         data = pickle.loads(full_msg[HEADERSIZE:])
                         ### DATA MANIP/SCREEN UPDATES HERE ###
                         #Note: updating other player state
-                        print(data)
+                        #print(data)
                         state = data
                         
                         end_msg = False
-            except IOError as e:
-                if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
-                    print('Reading error: {}'.format(str(e)))
-                    sys.exit()
-                continue
-
+            except Exception as e:
+                print('Hit error: {}'.format(str(e)))
+                sys.exit()
+                
     print("Game Over")
 
 if __name__ == '__main__':

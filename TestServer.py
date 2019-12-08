@@ -29,8 +29,8 @@ def main(argv, defaultHost):
     player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
     player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
     players = [player1, player2]
-    state = State(players, [], _game_over = False)
-    sample_msg = Memory(player1, new_missles = [], game_over = False, p_won = False)
+    state = State(players, [[],[]], _game_over = False)
+    sample_msg = Memory(player1, new_missiles = [], game_over = False, p_won = False)
 
     # CONNECTION SETUP W/ SOCKETS #
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -44,6 +44,7 @@ def main(argv, defaultHost):
     writes = []
     broken = []
     player_num = 0
+    counter = 0
 
     while True:
 
@@ -57,21 +58,27 @@ def main(argv, defaultHost):
                         # Get message data
                         header, data = getData(sock)
 
+                        if header == -1:
+
+
                         ###MAKE MESSAGE CHANEGS/DATA UPDATES HERE###
                         player_data = pickle.loads(data)
+                        print(player_data)
                         # Notes:
                             #Each tank should send ONLY their own info
                             #Prevents one tank from updating another tank's position
                         if sock == connections[1]:
                             #update from player1
-                            state.ps[0] = player_data.player
-                            state.missiles[0] = player_data.missles
-                            state.game_over = player_data.end
+                            state.ps[0] = player_data.p
+                            state.missiles[0] = player_data.missiles
+                            if state.game_over == False:
+                                state.game_over = player_data.end
                         elif sock == connections[2]:
                             #update from player2
-                            state.ps[1] = player_data.player
-                            state.missles[1]= player_data.missles
-                            state.game_over = player_data.end
+                            state.ps[1] = player_data.p
+                            state.missiles[1]= player_data.missiles
+                            if state.game_over == False:
+                                state.game_over = player_data.end
                         else:
                             print("Uh oh, that's not right..")
                             exit() 
@@ -86,8 +93,9 @@ def main(argv, defaultHost):
                                 update = bytes(pack_header, 'utf-8')+update
                                 client.sendall(update)
                                 print("Sent")
-            except ConnectionResetError:
-                print(len(connections))
+            except Exception:
+                for conn in connections:
+                    conn.close()
         elif len(connections) > 3:
             #too many connections, remove last connection
             connections.pop(len(connections)-1)
@@ -98,7 +106,7 @@ def main(argv, defaultHost):
                     # New connection to add to server
                     new_conn, new_addr = server.accept()
                     connections.append(new_conn)
-                    print(len(connections))
+                    print("Number of Connections:", len(connections))
                     print("Connected user from ip:{}".format(new_addr))
                     counter += 1
                     data = str(counter).encode()
