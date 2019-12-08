@@ -249,12 +249,13 @@ def GUI():
 
         game_state = state
         if game_state.game_over:
-            #TODO implement messages
-            pass
-            #if game_state.player_won:
-            #    show_win_message()
-            #else:
-            #    show_lose_message()
+            if game_state.p_won == player_num:
+                explode(player1, player, sprites, screen, background, background_rect)
+                game_over = True
+                if other_player.player_number == 1:
+                    won = True
+                else:
+                    lost = True
         new_enemy_missiles = game_state.missiles[other_player.player_number-1]
         if len(new_enemy_missiles) > 0:
             for m in new_enemy_missiles:
