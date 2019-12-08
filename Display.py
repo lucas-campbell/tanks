@@ -85,6 +85,7 @@ def GUI():
 
 
 ############## CLIENT STATE SETUP #################################
+    HEADERSIZE = 16
     HOST = input('SERVER IP:')
     PORT = 47477      
     player_num = 0
