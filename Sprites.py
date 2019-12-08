@@ -136,6 +136,7 @@ class Player(pygame.sprite.Sprite):
         # for collisions
         sprites.add(missile)
         missiles.add(missile)
+        return missile
 
         
 

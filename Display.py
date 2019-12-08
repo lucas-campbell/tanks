@@ -89,9 +89,9 @@ def GUI():
     HOST = input('SERVER IP:')
     PORT = 47477      
     player_num = 0
-    player1 = Player_pos(pos = (200, 0), direct = UDLR.down)
-    player2 = Player_pos(pos = (200, 400), direct = UDLR.up)
-    players = [player1, player2]
+    player1_pos = Player_pos(pos = (200, 0), direct = UDLR.down)
+    player2_pos = Player_pos(pos = (200, 400), direct = UDLR.up)
+    players = [player1_pos, player2_pos]
     state = State(players, [[],[]], False) 
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -107,6 +107,13 @@ def GUI():
     won = False
     lost = False
     while running:
+
+        if not is_connected:
+            print("Connected to server at IP:", HOST)
+            data = client.recv(HEADERSIZE)
+            player_num = int(data.decode())
+            print(player_num)
+            is_connected = True
 
         if game_over:
             show_reset_screen(screen, background, background_rect, clock, won, lost)
@@ -136,15 +143,25 @@ def GUI():
 
             #TODO change given info from server
             # Aliases, may just name them appropriately above
-            player = player1
-            other_player = player2
-            my_missiles = p1_missiles
-            their_missiles = p2_missiles
-            #### End Setup Loop ####
+            if player_num == 1:
+                player = player1
+                other_player = player2
+                my_pos = player1_pos
+                my_missiles = p1_missiles
+                their_missiles = p2_missiles
+            else:
+                player = player2
+                other_player = player1
+                my_pos = player2_pos
+                my_missiles = p2_missiles
+                their_missiles = p1_missiles
+
+            ######### End Setup Loop #########
 
         # keep loop running at the right speed
         clock.tick(FPS)
         # Process input (events)
+        my_new_missiles = []
         for event in pygame.event.get():
             # check for closing window
             if event.type == pygame.QUIT:
@@ -152,12 +169,13 @@ def GUI():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     #TODO determine which player we are
-                    player.shoot(sprites, my_missiles)
+                    my_new_missiles.append(player.shoot(sprites, my_missiles))
 
-        #####  < TODO CODE FOR COMMS WITH SERVER GOES HERE > #####
+        # Update: update sprite positions, send info to server and
+        # receive info on other tank's position
 
-        # Update: update sprite positions, send info to server/ get back
-        # confirmations. TODO add server communication
+        my_pos.position = player1.rect.center
+        my_pos.direction = player1.direction
 
         ##### CLIENT COMM CODE #####
         if not is_connected:
@@ -169,7 +187,7 @@ def GUI():
         else:
             #send information here
             try:
-                player_data = Memory(players[player_num-1], [], False, False)
+                player_data = Memory(players[player_num-1], my_new_missiles, game_over, won)
                 data = pickle.dumps(player_data)
                 msg_len = str(len(data))
                 pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
@@ -211,13 +229,7 @@ def GUI():
                 print('Hit error: {}'.format(str(e)))
                 sys.exit()
 
-
-
-
-        p1_pos = Player_pos(player1.rect.center, player1.direction)
-        p2_pos = Player_pos(player2.rect.center, player2.direction)
         game_state = state
-        #game_state = State([p1_pos, p2_pos]) #TODO get from Server
         if game_state.game_over:
             #TODO implement messages
             pass
