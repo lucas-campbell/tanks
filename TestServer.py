@@ -38,7 +38,7 @@ def main(argv, defaultHost):
     server.bind((HOST, PORT))
     #print('Bound to Socket')
     server.listen(10)
-    
+    print("Setup Server at IP:", HOST)
     # SETUP UNBLOCKED CONNECTIONS #
     connections = [server]
     writes = []
