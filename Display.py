@@ -99,6 +99,7 @@ def GUI():
     client.connect((HOST, PORT))
     client.setblocking(0)
     is_connected = False
+    other_player_ready = False
 
 
 ################## GAME LOOP ######################################
@@ -139,10 +140,9 @@ def GUI():
             sprites.add(player1) 
             sprites.add(player2) 
             # Create group of missiles to keep track of hits
-            # TODO do same for obstacles
             p1_missiles = pygame.sprite.Group()
             p2_missiles = pygame.sprite.Group()
-
+            # Do same for obstacles
             obstacles = pygame.sprite.Group()
             obstacle_list = []
             for obst in map1:
@@ -169,28 +169,38 @@ def GUI():
                 my_missiles = p2_missiles
                 their_missiles = p1_missiles
 
+            ready_for_new_game = True
+            player_data = Memory(players[player_num-1], _ready = ready_for_new_game)
+            data = pickle.dumps(player_data)
+            msg_len = str(len(data))
+            pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
+            data = bytes(pack_header, 'utf-8')+data
+            client.sendall(data)
+
             ######### End Setup Loop #########
 
-        # keep loop running at the right speed
-        clock.tick(FPS)
-        # Process input (events)
-        my_new_missiles = []
-        for event in pygame.event.get():
-            # check for closing window
-            if event.type == pygame.QUIT:
-                running = False 
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    #TODO determine which player we are
-                    my_new_missiles.append(player.shoot(sprites, my_missiles))
+        if other_player_ready:
+            # keep loop running at the right speed
+            clock.tick(FPS)
+            # Process input (events)
+            my_new_missiles = []
+            for event in pygame.event.get():
+                # check for closing window
+                if event.type == pygame.QUIT:
+                    running = False 
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        #TODO determine which player we are
+                        my_new_missiles.append(player.shoot(sprites, my_missiles))
 
-        # Update: update sprite positions, send info to server and
-        # receive info on other tank's position
+            # Update: update sprite positions, send info to server and
+            # receive info on other tank's position
 
-        my_pos.position = (player.rect.centerx, player.rect.centery)
-        my_pos.direction = player.direction
+            my_pos.position = (player.rect.centerx, player.rect.centery)
+            my_pos.direction = player.direction
 
         ##### CLIENT COMM CODE #####
+        #TODO possibly take out this second check
         if not is_connected:
             data = client.recv(HEADERSIZE)
             player_num = int(data.decode())
@@ -200,12 +210,18 @@ def GUI():
         else:
             #send information here
             try:
-                player_data = Memory(players[player_num-1], my_new_missiles, game_over, won)
-                data = pickle.dumps(player_data)
-                msg_len = str(len(data))
-                pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
-                data = bytes(pack_header, 'utf-8')+data
-                client.sendall(data)
+                #if not other_player_ready:
+                #    my_new_missiles = []
+                #    ready_for_new_game = True
+                #else:
+                #    ready_for_new_game = False
+                if other_player_ready:
+                    player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready = ready_for_new_game)
+                    data = pickle.dumps(player_data)
+                    msg_len = str(len(data))
+                    pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
+                    data = bytes(pack_header, 'utf-8')+data
+                    client.sendall(data)
 
                 #### wait for update here ###
                 full_msg = b''
@@ -248,17 +264,10 @@ def GUI():
                 sys.exit()
 
         game_state = state
-        #if game_state.game_over:
-        #    if game_state.player_won == player_num:
-        #        print("received explosion")
-        #        explode(other_player, sprites, screen, background, background_rect)
-        #        game_over = True
-        #        won = True
-        #    else:
-        #        explode(player, sprites, screen, background, background_rect)
-        #        game_over = True
-        #        lost = True
-        #else:
+        other_player_ready = game_state.ps_ready[other_player.player_number-1]
+        # Go back and wait if other player not yet ready
+        if not other_player_ready:
+            continue
         new_enemy_missiles = game_state.missiles[other_player.player_number-1]
         if len(new_enemy_missiles) > 0:
             for m in new_enemy_missiles:
@@ -269,8 +278,6 @@ def GUI():
             
         sprites.update(game_state, obstacles)
 
-        #TODO obstacle/missile collisions
-
         #TODO tank collision --> tie game
 
         p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, dokill=True)
@@ -280,6 +287,7 @@ def GUI():
             print("calculated explosion here")
             explode(player1, sprites, screen, background, background_rect)
             game_over = True
+            ready_for_new_game = False
             if other_player.player_number == 1:
                 won = True
             else:
@@ -297,6 +305,7 @@ def GUI():
             print("calculated explosion here")
             explode(player2, sprites, screen, background, background_rect)
             game_over = True
+            ready_for_new_game = False
             if other_player.player_number == 1:
                 lost = True
             else:
@@ -320,7 +329,7 @@ def GUI():
         sprites.draw(screen)
         # after drawing everything, flip the display
 
-        # TODO possibly call display.update() with list of dirty rect's
+        # TODO possibly call display.update() with list of dirty rect's, for speed
         pygame.display.flip()
 
     pygame.display.quit()

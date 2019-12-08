@@ -29,7 +29,7 @@ def main(argv, defaultHost):
     player1 = Player_pos(pos = (20, 400), direct = UDLR.down)
     player2 = Player_pos(pos = (800-20, 400), direct = UDLR.up)
     players = [player1, player2]
-    state = State(players, [[],[]], _game_over = False)
+    state = State(players)
     sample_msg = Memory(player1, new_missiles = [], game_over = False, p_won = False)
 
     # CONNECTION SETUP W/ SOCKETS #
@@ -69,13 +69,13 @@ def main(argv, defaultHost):
                             state.ps[0] = player_data.p
                             state.missiles[0] = player_data.missiles
                             state.game_over = player_data.end
-                            print("p1 position: ", player_data.p.position)
+                            state.ps_ready[0] = player_data.ready
                         elif sock == connections[2]:
                             #update from player2
                             state.ps[1] = player_data.p
                             state.missiles[1]= player_data.missiles
                             state.game_over = player_data.end
-                            print("p2 position: ", player_data.p.position)
+                            state.ps_ready[1] = player_data.ready
                         else:
                             print("Uh oh, that's not right..")
                             exit() 
