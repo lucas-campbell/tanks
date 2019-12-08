@@ -15,10 +15,11 @@ class Player_pos:
 		self.direction = direct  
 
 class State:
-    def __init__(self, _players, _missiles = [[],[]], _game_over = False):
+    def __init__(self, _players, _missiles = [[],[]], _game_over = False, _player_won = 1):
         self.ps = _players
         self.missiles = _missiles
         self.game_over = _game_over
+        self.player_won = _player_won
 
 class Memory:
 	def __init__(self, player, new_missiles = None, game_over = False, p_won = False):
