@@ -134,7 +134,7 @@ class Obstacle(pygame.sprite.Sprite):
     def __init__(self, r):
         self.rect = r
         self.image = pygame.Surface((r.width, r.height))
-        self.image.fill(RED)
+        self.image.fill(GREEN)
         pygame.sprite.Sprite.__init__(self)
     def update(self, game_state):
         pass
