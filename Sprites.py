@@ -174,7 +174,7 @@ class Missile(pygame.sprite.Sprite):
         # clear background for sprite TODO possibly black?
         self.image.set_colorkey(WHITE)
 
-    def update(self):
+    def update(self, game_state):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 

@@ -5,6 +5,7 @@ import Sprites # objects for sprite movement
 from memory import *
 from constants import *
 from maps import *
+from time import sleep
 
 ###########
 # Functions called to command or query the display
@@ -39,7 +40,7 @@ def getReportedUserInput():
     pass
 
 
-def show_reset_screen(screen, background, background_rect, clock, won, lost):
+def show_reset_screen(screen, background, background_rect, clock, won=False, lost=False):
     """
     Displays message to user that they have lost or won
     """
@@ -82,18 +83,27 @@ def draw_text(surf, text, size, x, y):
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
 
-def explode(player, screen, background, background_rect, hits):
-    screen.blit(background, background_rect)
+def explode(exploding_player, client_player, sprites, screen, background, background_rect):
+    # Create explosion in correct place
     explosion = pygame.image.load('explosion.png').convert()
-    explosion = pygame.transform.scale(explosion, player.rect.size)
+    explosion = pygame.transform.scale(explosion, exploding_player.rect.size)
+    explosion.set_colorkey(WHITE)
     explosion_rect = explosion.get_rect()
-    explosion_rect.center = player.rect.center
+    explosion_rect.center = exploding_player.rect.center
+    #exploding_player.kill()
+
+    # Draw resulting screen
+    screen.blit(background, background_rect)
+    sprites.draw(screen)
     screen.blit(explosion, explosion_rect)
     pygame.display.flip()
-    #TODO just add a usleep for 2 seconds instead, then go to reset screen.
-    # Also draw in the other tank
-    while True:
-        pass
+    #if exploding_player.player_number == client_player.player_number:
+    #    #show_reset_screen(screen, background, background_rect, clock, lost=True)
+
+    #    lost = True
+    #else:
+    #    #show_reset_screen(screen, background, background_rect, clock, won=True)
+    
 
 ############################# MAIN DRIVER #########################
 
@@ -117,11 +127,15 @@ def GUI():
     running = True
     # Start out with reset screen
     game_over = True
+    won = False
+    lost = False
     while running:
 
         if game_over:
-            show_reset_screen(screen, background, background_rect, clock, False, False)
+            show_reset_screen(screen, background, background_rect, clock, won, lost)
             game_over = False
+            won = False
+            lost = False
 
             # Create players and their sprites
             sprites = pygame.sprite.Group()
@@ -159,9 +173,9 @@ def GUI():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     #TODO determine which player we are
-                    player.shoot()
+                    player.shoot(sprites, my_missiles)
 
-        #####  < CODE FOR COMMS WITH SERVER GOES HERE > #####
+        #####  < TODO CODE FOR COMMS WITH SERVER GOES HERE > #####
 
         # Update: update sprite positions, send info to server/ get back
         # confirmations. TODO add server communication
@@ -184,13 +198,28 @@ def GUI():
 
         #TODO obstacle/missile collisions
 
-        p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, False)
-        p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, False)
+        #TODO tank collision --> tie game
+
+        p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, dokill=True)
+        p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, dokill=True)
 
         if len(p1_hit) > 0:
-            explode(player1, screen, background, background_rect, p1_hit)
+            explode(player1, player, sprites, screen, background, background_rect)
+            game_over = True
+            if other_player.player_number == 1:
+                won = True
+            else:
+                lost = True
         elif len(p2_hit) > 0:
-            explode(player2, screen, background, background_rect, p2_hit)
+            explode(player2, player, sprites, screen, background, background_rect)
+            game_over = True
+            if other_player.player_number == 1:
+                lost = True
+            else:
+                won = True
+
+        if game_over:
+            sleep(2)
 
         # Draw / render
         #TODO remove fill black
@@ -199,6 +228,7 @@ def GUI():
         #  Blits all sprites to screen
         sprites.draw(screen)
         # after drawing everything, flip the display
+
         # TODO possibly call display.update() with list of dirty rect's
         pygame.display.flip()
 
