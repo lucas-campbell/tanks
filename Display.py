@@ -7,39 +7,6 @@ from constants import *
 from maps import *
 from time import sleep
 
-###########
-# Functions called to command or query the display
-###########
-def displayInit():
-    """
-    To be called from main client, possibly as separate process
-    """
-    pygame.init()
-
-    ####
-    # Code for setting game display/width goes here,
-    #  + call to pygame.display.set_mode(), set caption, etc.
-    # set clock, colors, crashed bool, load sprites
-    ####
-    
-
-#TODO params
-def updateTankPosition(disp, tank_id, etc):
-    drawTank(disp, x, y)
-    # returns nothing
-    pass
-
-#TODO params
-def explodeTank(disp, tank_id, etc):
-    # returns nothing
-    pass
-
-def getReportedUserInput():
-    # returns Message object to be sent over to Server, or simply to update
-    # game state
-    pass
-
-
 def show_reset_screen(screen, background, background_rect, clock, won=False, lost=False):
     """
     Displays message to user that they have lost or won
@@ -90,19 +57,12 @@ def explode(exploding_player, client_player, sprites, screen, background, backgr
     explosion.set_colorkey(WHITE)
     explosion_rect = explosion.get_rect()
     explosion_rect.center = exploding_player.rect.center
-    #exploding_player.kill()
 
     # Draw resulting screen
     screen.blit(background, background_rect)
     sprites.draw(screen)
     screen.blit(explosion, explosion_rect)
     pygame.display.flip()
-    #if exploding_player.player_number == client_player.player_number:
-    #    #show_reset_screen(screen, background, background_rect, clock, lost=True)
-
-    #    lost = True
-    #else:
-    #    #show_reset_screen(screen, background, background_rect, clock, won=True)
     
 
 ############################# MAIN DRIVER #########################
@@ -194,7 +154,7 @@ def GUI():
             for m in new_enemy_missiles:
                 their_missiles.add(m)
                 
-        sprites.update(game_state)
+        sprites.update(game_state, obstacles)
 
         #TODO obstacle/missile collisions
 

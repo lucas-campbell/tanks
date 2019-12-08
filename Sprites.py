@@ -15,12 +15,11 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # Get image and corresponding rectangle
         self.image = pygame.image.load(image_file_path).convert()
-        #TODO better scaling process(?), change to constants
-        self.image = pygame.transform.scale(self.image, (40, 40))
+        self.image = pygame.transform.scale(self.image, (TANK_H, TANK_W))
         self.original = self.image.copy()
         self.original.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
-        # sets starting position of sprite, TODO change with a ctor param
+        # sets starting position of sprite, TODO change with a ctor param based on which map
         self.rect.centery = HEIGHT / 2
         if self.player_number == 1:
             self.rect.centerx = 20
@@ -34,7 +33,7 @@ class Player(pygame.sprite.Sprite):
         # clear background for sprite
         self.image.set_colorkey(BLACK)
 
-    def update(self, game_state):
+    def update(self, game_state, obstacles):
         """
         Implementation of pygame.sprite.Sprite.update method. Gets called for 
         each sprite in a Group with pygame.sprite.Group.update()
@@ -59,10 +58,15 @@ class Player(pygame.sprite.Sprite):
                 new_direction = UDLR.right
 
             # Out-of-bounds checking
+            old_x = self.rect.x
+            # Check for collision with obstacles
             self.rect.x += self.speedx
-            if self.rect.right > WIDTH:
+            crash = pygame.sprite.spritecollide(self, obstacles, dokill=False)
+            if len(crash) > 0:
+                self.rect.x = old_x
+            elif self.rect.right > WIDTH:
                 self.rect.right = WIDTH
-            if self.rect.left < 0:
+            elif self.rect.left < 0:
                 self.rect.left = 0
 
             # Up-down movement
@@ -75,10 +79,15 @@ class Player(pygame.sprite.Sprite):
                 new_direction = UDLR.up
 
             # Out-of-bounds checking
+            old_y = self.rect.y
+            # Check for collision with obstacles
             self.rect.y += self.speedy
-            if self.rect.bottom > HEIGHT:
+            crash = pygame.sprite.spritecollide(self, obstacles, dokill=False)
+            if len(crash) > 0:
+                self.rect.y = old_y
+            elif self.rect.bottom > HEIGHT:
                 self.rect.bottom = HEIGHT
-            if self.rect.top < 0:
+            elif self.rect.top < 0:
                 self.rect.top = 0
 
             #TODO obstacle collision checking
@@ -134,9 +143,9 @@ class Obstacle(pygame.sprite.Sprite):
     def __init__(self, r):
         self.rect = r
         self.image = pygame.Surface((r.width, r.height))
-        self.image.fill(GREEN)
+        self.image.fill(dark_green)
         pygame.sprite.Sprite.__init__(self)
-    def update(self, game_state):
+    def update(self, game_state, obstacles):
         pass
 
 
@@ -174,10 +183,15 @@ class Missile(pygame.sprite.Sprite):
         # clear background for sprite TODO possibly black?
         self.image.set_colorkey(WHITE)
 
-    def update(self, game_state):
+    def update(self, game_state, obstacles):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
+        
+        # Check for collision with obstacles
+        hit_obstacle = pygame.sprite.spritecollide(self, obstacles, dokill=False)
+        if len(hit_obstacle) > 0:
+            self.kill()
 
-        if self.rect.left < 0 or self.rect.right > WIDTH \
+        elif self.rect.left < 0 or self.rect.right > WIDTH \
           or self.rect.bottom < 0 or self.rect.top > HEIGHT:
             self.kill()
