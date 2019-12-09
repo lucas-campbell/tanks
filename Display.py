@@ -283,7 +283,7 @@ def GUI():
         p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, dokill=False)
 
         if len(p1_hit) > 0:
-            print("calculated explosion here")
+            #print("calculated explosion here")
             explode(player1, sprites, screen, background, background_rect)
             game_over = True
             ready_for_new_game = False
