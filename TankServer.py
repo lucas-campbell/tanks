@@ -18,6 +18,11 @@ def getData(tsocket):
     msg_len = int(header)
     return header, tsocket.recv(msg_len)
 
+def add_header(data):
+    msg_len = str(len(data))
+    pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
+    return bytes(pack_header, 'utf-8')+data
+
 def main(argv, defaultHost):
     if defaultHost:
         HOST = '127.0.0.1'
@@ -61,6 +66,7 @@ def main(argv, defaultHost):
                             # Client disconnect #
                             if header == -1:
                                 connections.remove(sock)
+                                continue
 
                             ###MAKE MESSAGE CHANGES/DATA UPDATES HERE###
                             player_data = pickle.loads(data)
@@ -89,18 +95,12 @@ def main(argv, defaultHost):
                             for client in connections:
                                 if client != server and client != sock: 
                                     update = pickle.dumps(state)
-                                    msg_len = len(update)
-                                    pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
-                                    update = bytes(pack_header, 'utf-8')+update
+                                    update = add_header(update)
                                     client.sendall(update)
                                     #print("Sent")
                 except Exception:
                     for conn in connections:
                         conn.close()
-
-            elif len(connections) > 3:
-                #too many connections, remove last connection
-                connections.pop(len(connections)-1)
             else: 
                 #wait on more connections
                 for sock in read_socks:

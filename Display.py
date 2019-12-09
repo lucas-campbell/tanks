@@ -9,7 +9,14 @@ from maps import *
 from time import sleep
 import copy
 
-def show_reset_screen(screen, background, background_rect, clock, won=False, lost=False):
+HEADERSIZE = 16
+
+def add_header(data):
+    msg_len = str(len(data))
+    pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
+    return bytes(pack_header, 'utf-8')+data
+
+def show_reset_screen(screen, background, background_rect, clock, connection, won=False, lost=False):
     """
     Displays message to user that they have lost or won
     """
@@ -33,11 +40,17 @@ def show_reset_screen(screen, background, background_rect, clock, won=False, los
             if event.type == pygame.QUIT:
                 pygame.display.quit()
                 pygame.quit()
+                ending = pickle.dumps(-1)
+                ending = add_header(ending)
+                connection.sendall()
                 exit(0)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.display.quit()
                     pygame.quit()
+                    ending = pickle.dumps(-1)
+                    ending = add_header(ending)
+                    connection.sendall(ending)
                     exit(0)
                 elif event.key == pygame.K_SPACE:
                     waiting = False
@@ -87,7 +100,6 @@ def GUI():
 
 
 ############## CLIENT STATE SETUP #################################
-    HEADERSIZE = 16
     HOST = input('SERVER IP:')
     PORT = 47477      
     player_num = 0
@@ -127,7 +139,7 @@ def GUI():
                 continue
 
         if game_over:
-            show_reset_screen(screen, background, background_rect, clock, won, lost)
+            show_reset_screen(screen, background, background_rect, clock, client, won, lost)
             game_over = False
             won = False
             lost = False
@@ -176,9 +188,7 @@ def GUI():
             ready_for_new_game = True
             player_data = Memory(players[player_num-1], _ready = ready_for_new_game)
             data = pickle.dumps(player_data)
-            msg_len = str(len(data))
-            pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
-            data = bytes(pack_header, 'utf-8')+data
+            data = add_header(data)
             client.sendall(data)
 
             ######### End Setup Loop #########
@@ -214,14 +224,10 @@ def GUI():
         else:
             #send information here
             try:
-                ### check to see if server closed ###
-
                 if other_player_ready:
                     player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready = ready_for_new_game)
                     data = pickle.dumps(player_data)
-                    msg_len = str(len(data))
-                    pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
-                    data = bytes(pack_header, 'utf-8')+data
+                    data = add_header(data)
                     client.sendall(data)
 
                 #### wait for update here ###
@@ -294,9 +300,7 @@ def GUI():
 
             player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready=False)
             data = pickle.dumps(player_data)
-            msg_len = str(len(data))
-            pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
-            data = bytes(pack_header, 'utf-8')+data
+            data = add_header(data)
             client.sendall(data)
 
 
@@ -312,9 +316,7 @@ def GUI():
 
             player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready=False)
             data = pickle.dumps(player_data)
-            msg_len = str(len(data))
-            pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
-            data = bytes(pack_header, 'utf-8')+data
+            data = add_header(data)
             client.sendall(data)
 
         if game_over:
