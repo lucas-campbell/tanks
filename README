@@ -8,7 +8,7 @@ Hours Spent ~80 hours
 TestClient.py: This is used to test the functionality of our Client code. We use this to see if the Client is able
 sucessfuly send to and recieve messages from the server
 
-TestServer.py:This is used to test the functionality of our Server code. We use this to see if the Server is able 
+TankServer.py:This is used to test the functionality of our Server code. We use this to see if the Server is able 
 to sucessfully send to and recieve messages from the Client 
 
 Display.py: Display was initially where our GUI code had lived. We turned Display.py into our main file so

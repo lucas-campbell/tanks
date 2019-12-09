@@ -209,17 +209,14 @@ def GUI():
         if not is_connected:
             data = client.recv(HEADERSIZE)
             player_num = int(data.decode())
-            print("Connected to server at IP:", HOST)
             print("Player Number:", player_num)
+            print("Connected to server at IP:", HOST)
             is_connected = True
         else:
             #send information here
             try:
-                #if not other_player_ready:
-                #    my_new_missiles = []
-                #    ready_for_new_game = True
-                #else:
-                #    ready_for_new_game = False
+                ### check to see if server closed ###
+
                 if other_player_ready:
                     player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready = ready_for_new_game)
                     data = pickle.dumps(player_data)
@@ -238,8 +235,6 @@ def GUI():
 
                     if not len(msg):
                         continue
-                        #print('Connection closed by the server')
-                        #exit()
 
                     if new_msg:
                         msg_header = msg[:HEADERSIZE]
@@ -248,15 +243,15 @@ def GUI():
 
                     full_msg += msg
 
-                    #print(len(full_msg)), testing
-
+                    # Got full message #
                     if len(full_msg) - HEADERSIZE == msg_length:
-                        #print("Got message")
                         data = pickle.loads(full_msg[HEADERSIZE:])
-                        ### DATA MANIP/SCREEN UPDATES HERE ###
-                        #Note: updating other player state
-                        #print(data)
-                        state = data
+                        ### DATA UPDATES HERE ###
+                        if data == -1:
+                            print("Connection closed by server, quitting..")
+                            exit(1)
+                        else:    
+                            state = data
                         
                         end_msg = False
             except IOError as e:
