@@ -8,29 +8,32 @@ import socket, select
 import pickle
 import sys
 from memory import *
-from Arena import *
 
 HEADERSIZE = 16
 
 def getData(tsocket):
+    '''Gets data and formats it using socket.recv'''
     msg = tsocket.recv(HEADERSIZE)
     header = msg[:HEADERSIZE]
     msg_len = int(header)
     return header, tsocket.recv(msg_len)
 
 def add_header(data):
+    '''Adds a header to a Bytes object'''
     msg_len = str(len(data))
     pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
     return bytes(pack_header, 'utf-8')+data
 
 def main(argv, defaultHost):
+    '''Start a server for Tanks and handle client connections'''
+    # Default Host options for local play #
     if defaultHost:
         HOST = '127.0.0.1'
     else:
         HOST = input('SERVER IP:')
     PORT = 47477
     
-    #init server state conditions
+    # INIT CONDITIONS #
     player1 = Player_pos(pos = (20, 400), direct = UDLR.down)
     player2 = Player_pos(pos = (800-20, 400), direct = UDLR.up)
     players = [player1, player2]
@@ -41,34 +44,37 @@ def main(argv, defaultHost):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind((HOST, PORT))
-    #print('Bound to Socket')
     server.listen(10)
     print("Setup Server at IP:", HOST)
-    # SETUP UNBLOCKED CONNECTIONS #
+    
+    # SETUP FOR UNBLOCKED CONNECTIONS #
     connections = [server]
     writes = []
     broken = []
     player_num = 0
     counter = 0
 
+    # SERVER LOOP #
     while True:
         try:
+            # BLOCKING SOCKET CALL #
             read_socks, write_socks, error_socks = select.select(connections, writes, broken)
             
+            # ALL CLIENTS CONNECTED #
             if len(connections) == 3:
-                #have all connections, run the game
+                # BEGIN GAME #
                 try:
                     for sock in read_socks:
                         if sock != server:
-                            # Get message data #
+                            # GET MESSAGE #
                             header, data = getData(sock)
 
-                            # Client disconnect #
+                            # CLIENT DISCONNECT #
                             if header == -1:
                                 connections.remove(sock)
                                 continue
 
-                            ###MAKE MESSAGE CHANGES/DATA UPDATES HERE###
+                            ### MAKE MESSAGE CHANGES/DATA UPDATES HERE ###
                             player_data = pickle.loads(data)
                             #print(player_data)
                             # Notes:
@@ -91,26 +97,27 @@ def main(argv, defaultHost):
                                 exit() 
                             #print("Sending Data")
 
-                            # Client is sending updated information
+                            # CLIENT SENDING INFORMATION #
                             for client in connections:
                                 if client != server and client != sock: 
                                     update = pickle.dumps(state)
                                     update = add_header(update)
                                     client.sendall(update)
-                                    #print("Sent")
+
+                # SOCKET COMMUNICATION BROKE #
                 except Exception:
                     for conn in connections:
                         conn.close()
+            # WAITING ON CLIENT CONNETIONS #
             else: 
-                #wait on more connections
                 for sock in read_socks:
-                    # Client re-connecting #
+                    # CLIENT RE-CONNECTING #
                     if sock != server and sock in connections:
                         connections.remove(sock)
                         counter -= 1
 
+                    # HANDLE NEW CONNECTION #
                     if sock == server:
-                        # New connection to add to server
                         new_conn, new_addr = server.accept()
                         connections.append(new_conn)
                         print("Number of Connections:", len(connections))
@@ -118,6 +125,7 @@ def main(argv, defaultHost):
                         counter += 1
                         data = str(counter).encode()
                         new_conn.sendall(data)
+        # ERROR WHEN LISTENING #
         except Exception as e:
             print("Uh oh! Ran into Exception [", str(e), "] while running.")            
             print("Shutting down...")
