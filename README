@@ -8,14 +8,17 @@ Hours Spent ~80 hours
 TestClient.py: This is used to test the functionality of our Client code. We use this to see if the Client is able
 sucessfuly send to and recieve messages from the server
 
-TankServer.py:This is used to test the functionality of our Server code. We use this to see if the Server is able 
-to sucessfully send to and recieve messages from the Client 
+TankServer.py:This is the server that is constructed to host the clients. This was previously are test server
+ in which We used to see if the Server was able to sucessfully send to and recieve messages from the Client.
+ Furthermore it is one of our main files needed to run the game
 
-Display.py: Display was initially where our GUI code had lived. We turned Display.py into our main file so
+Display.py: Display is where our GUI code lives. We turned Display.py into our main file so
 it includes the full game. I.e. This file serves as the glue between the GUI and the Server in which 
 player movement and position and tracked by the server and then sent to both clients GUI to update the 
 display
 
-Sprites.py: Here we have all our Sprite Functionallity. We generate our Tanks as well as giving 
+Sprites.py: Here we have all our Sprite Functionallity. We generate the our Tanks as well as giving 
 them a starting position, the obstacles on the map, and missiles the tanks shoot as well how they operate
 during collisions with obstacles vs collisions with Tanks.
+  
+  high_res_green_tank.png,high_res_blue_tank.png,
