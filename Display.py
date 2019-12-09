@@ -12,6 +12,7 @@ import copy
 HEADERSIZE = 16
 
 def add_header(data):
+    '''Adds a header to a Bytes object'''
     msg_len = str(len(data))
     pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
     return bytes(pack_header, 'utf-8')+data
