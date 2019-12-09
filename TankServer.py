@@ -57,7 +57,6 @@ def main(argv, defaultHost):
                         if sock != server:
                             # Get message data #
                             header, data = getData(sock)
-                            print(header)
 
                             # Client disconnect #
                             if header == -1:
