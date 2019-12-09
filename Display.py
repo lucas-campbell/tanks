@@ -41,17 +41,23 @@ def show_reset_screen(screen, background, background_rect, clock, connection, wo
             if event.type == pygame.QUIT:
                 pygame.display.quit()
                 pygame.quit()
+
+                # SEND QUIT MSG TO SERVER #
                 ending = pickle.dumps(-1)
                 ending = add_header(ending)
                 connection.sendall()
+                
                 exit(0)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.display.quit()
                     pygame.quit()
+
+                    # SEND QUIT MSG TO SERVER #
                     ending = pickle.dumps(-1)
                     ending = add_header(ending)
                     connection.sendall(ending)
+                    
                     exit(0)
                 elif event.key == pygame.K_SPACE:
                     waiting = False
@@ -122,17 +128,20 @@ def GUI():
 
 ################## GAME LOOP ######################################
     running = True
-    # Start out with reset screen
+    # Start out with reset screen #
     game_over = True
     won = False
     lost = False
+    
     while running:
+        # GET PLAYER NUMBER #
         try:
             if not is_connected:
                 print("Connected to server at IP:", HOST)
                 data = client.recv(HEADERSIZE)
                 player_num = int(data.decode())
                 is_connected = True
+        # COULD NOT GET PLAYER NUMBER #
         except IOError as e:
                 if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
                     print('Reading error: {}'.format(str(e)))
@@ -215,63 +224,60 @@ def GUI():
             my_pos.direction = player.direction
 
         ##### CLIENT COMM CODE #####
-        #TODO possibly take out this second check
-        if not is_connected:
-            data = client.recv(HEADERSIZE)
-            player_num = int(data.decode())
-            print("Player Number:", player_num)
-            print("Connected to server at IP:", HOST)
-            is_connected = True
-        else:
-            #send information here
-            try:
-                if other_player_ready:
-                    player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready = ready_for_new_game)
-                    data = pickle.dumps(player_data)
-                    data = add_header(data)
-                    client.sendall(data)
+        try:
+            # SEND FOR NEW GAME #
+            if other_player_ready:
+                player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready = ready_for_new_game)
+                data = pickle.dumps(player_data)
+                data = add_header(data)
+                client.sendall(data)
 
-                #### wait for update here ###
-                full_msg = b''
-                new_msg = True
-                end_msg = True
+            # WAIT FOR UPDATE #
+            full_msg = b''
+            new_msg = True
+            end_msg = True
 
-                while end_msg:
-                    msg = client.recv(HEADERSIZE)
+            # GET A FULL MESSAGE FROM SERVER #
+            while end_msg:
+                msg = client.recv(HEADERSIZE)
 
-                    if not len(msg):
-                        continue
+                # MSG EMPTY, DO NOTHING #
+                if not len(msg):
+                    continue
 
-                    if new_msg:
-                        msg_header = msg[:HEADERSIZE]
-                        msg_length = int(msg_header)
-                        new_msg = False
+                # STARTING A NEW MESSAGE #
+                if new_msg:
+                    msg_header = msg[:HEADERSIZE]
+                    msg_length = int(msg_header)
+                    new_msg = False
 
-                    full_msg += msg
+                full_msg += msg
 
-                    # Got full message #
-                    if len(full_msg) - HEADERSIZE == msg_length:
-                        data = pickle.loads(full_msg[HEADERSIZE:])
-                        ### DATA UPDATES HERE ###
-                        if data == -1:
-                            print("Connection closed by server, quitting..")
-                            exit(1)
-                        else:    
-                            state = data
-                        
-                        end_msg = False
-            except IOError as e:
-                if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
-                    print('Reading error: {}'.format(str(e)))
-                    sys.exit()
-                continue
-            except Exception as e:
-                print('Hit error: {}'.format(str(e)))
+                # GOT FULL MESSAGE #
+                if len(full_msg) - HEADERSIZE == msg_length:
+                    data = pickle.loads(full_msg[HEADERSIZE:])
+                    # DATA UPDATES HERE #
+                    if data == -1:
+                        print("Connection closed by server, quitting..")
+                        exit(1)
+                    else:    
+                        state = data
+                    
+                    end_msg = False
+        # CHECK FOR 0 BYTE MESSAGES (NON-BLOCKING SOCKETS) #
+        except IOError as e:
+            if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
+                print('Reading error: {}'.format(str(e)))
                 sys.exit()
+            continue
+        # HANDLE OTHER ERRORS #
+        except Exception as e:
+            print('Hit error: {}'.format(str(e)))
+            sys.exit()
 
         game_state = state
         other_player_ready = game_state.ps_ready[other_player.player_number-1]
-        # Go back and wait if other player not yet ready
+        # WAIT ON OTHER PLAYER #
         if not other_player_ready:
             continue
         new_enemy_missiles = game_state.missiles[other_player.player_number-1]
