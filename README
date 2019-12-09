@@ -1,0 +1,21 @@
+Group: Concurrent Tanks 
+Members: Cam, Lucas, and Omar
+12/9/19
+Concurrent Programming: Final Project
+Hours Spent ~80 hours
+
+
+TestClient.py: This is used to test the functionality of our Client code. We use this to see if the Client is able
+sucessfuly send to and recieve messages from the server
+
+TestServer.py:This is used to test the functionality of our Server code. We use this to see if the Server is able 
+to sucessfully send to and recieve messages from the Client 
+
+Display.py: Display was initially where our GUI code had lived. We turned Display.py into our main file so
+it includes the full game. I.e. This file serves as the glue between the GUI and the Server in which 
+player movement and position and tracked by the server and then sent to both clients GUI to update the 
+display
+
+Sprites.py: Here we have all our Sprite Functionallity. We generate the our Tanks as well as giving 
+them a starting position, the obstacles on the map, and missiles the tanks shoot as well how they operate
+during collisions with obstacles vs collisions with Tanks.
