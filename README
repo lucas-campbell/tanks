@@ -16,6 +16,6 @@ it includes the full game. I.e. This file serves as the glue between the GUI and
 player movement and position and tracked by the server and then sent to both clients GUI to update the 
 display
 
-Sprites.py: Here we have all our Sprite Functionallity. We generate the our Tanks as well as giving 
+Sprites.py: Here we have all our Sprite Functionallity. We generate our Tanks as well as giving 
 them a starting position, the obstacles on the map, and missiles the tanks shoot as well how they operate
 during collisions with obstacles vs collisions with Tanks.
