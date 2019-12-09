@@ -119,7 +119,6 @@ def GUI():
                 print("Connected to server at IP:", HOST)
                 data = client.recv(HEADERSIZE)
                 player_num = int(data.decode())
-                print("Player num:", player_num)
                 is_connected = True
         except IOError as e:
                 if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
