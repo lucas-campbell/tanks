@@ -5,39 +5,53 @@ Concurrent Programming: Final Project
 Hours Spent ~80 hours
 
 How To Run Concurrent Tanks Game:
-1.) On any terminal, run the command "hostname -i" to get your IP Address for the server
-2.) Copy the IP Address or write it down somewhere, then run ./TankServer.py and enter
-      the IP address 
-3.) Have same client then ruyn ./Display.py and enter the same IP Address used to start the 
-server when prompted
-4.) The other client should then run ./Display.py and enter the IP Address used by the first client
-(the client that started the server would need to tell the other client trying to connect what the IP Address 
-for the server is)
-5.) Once both clients hit space bar the game will start. If one client hit's escape at the starting screen
-(the screen before both clients hit escape)the server will not crash and allow for someone else to connect
-however if someone disconnects during the actual game play, then the server will closes the connections
-(the client may not quit out on it's own in this case)
+1.) On any terminal, run the command "hostname -i" to get your IP Address for
+    the server
 
-6.) Keys for movement are the arrow keys for UP, DOWN, LEFT, RIGHT respectivley use space bar to launch
-missiles. There are obstacles, niether tanks nor missles may not go through obstacles.
+2.) Copy the IP Address or write it down somewhere, then run ./TankServer.py
+    and enter the IP address 
 
-7.) Once a Tank is hit, we've reached a game over, the clients may choose to play again by hitting space
-(Sometimes we'll get an out of sync bug where it will only display game over 
+3.) Have same client then run ./Client.py and enter the same IP Address used to
+    start the server when prompted
+
+4.) The other client should then run ./Client.py and enter the IP Address used 
+    by the first client (the client that started the server would need to tell
+    the other client trying to connect what the IP Address for the server is)
+
+5.) Once both clients hit space bar the game will start. If one client hit's
+    escape at the starting screen (the screen before both clients hit escape)
+    the server will not crash and allow for someone else to connect however if
+    someone disconnects during the actual game play, then the server will
+    closes the connections (the client may not quit out on it's own in this
+    case)
+
+6.) Keys for movement are the arrow keys for UP, DOWN, LEFT, RIGHT
+    respectivley. Use space bar to launch missiles. There are obstacles; neither
+    tanks nor missles may go through obstacles.
+
+7.) Once a Tank is hit, we've reached a game over, and the clients may choose
+    to play again by hitting space, or quit with ESC. (Sometimes an out of sync
+    bug will occur where only a "game over" message will be displayed. This
+    will require a full restart of the server and clients.)
 
 
-TankServer.py:This is the server that is constructed to host the clients. This was previously are test server
- in which We used to see if the Server was able to sucessfully send to and recieve messages from the Client.
- Furthermore it is one of our main files needed to run the game
+TankServer.py: This is the server that is constructed to serve game state data
+    to the clients. This handles updates in the form of Memory objects, and
+    sends to the other player an updated State object, representing the current
+    game state. We cut down on information stored on the server by having it
+    only keep track of any new missiles that were created since the last update
+    by either player.
 
-Client.py: Client is where our Client interactions with 
-the GUI and Server as well as GUI code lives. We turned Client.py into our main file so
-it includes the full game. I.e. This file serves as the glue between the GUI and the Server in which 
-player movement and position and tracked by the server and then sent to both clients so they can update
-their GUI (because GUI is local to the client) to update their display
+Client.py: Client is where our Client interactions with the GUI and Server as 
+    well as GUI code lives. After initial setup and connection with the server,
+    it enters a loop of processing input from the user (keyboard), querying the
+    server for new enemy tank movement and missiles, updating the pygame
+    sprites, and finally updating the display shown to the user.
 
-Sprites.py: Here we have all our Sprite Functionallity. We generate the our Tanks as well as giving 
-them a starting position, the obstacles on the map, and missiles the tanks shoot as well how they operate
-during collisions with obstacles vs collisions with Tanks.
+Sprites.py: Here we have all our Sprite functionality. We define Players
+    (Tanks), Obstacles on the map, and Missiles shot by the tanks.
 
-Constants.py
-high_res_green_tank.png,high_res_blue_tank.png,
+Constants.py: Contains constants used by the various files of the project
+
+Messaging.py: Definition of the Memory, Player_pos, and State classes which
+    serve as structures to hold data passed between the server and clients.

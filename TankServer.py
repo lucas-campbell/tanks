@@ -7,7 +7,7 @@
 import socket, select
 import pickle
 import sys
-from memory import *
+from Messaging import *
 from constants import *
 
 def getData(tsocket):

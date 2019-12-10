@@ -4,7 +4,7 @@ import random
 import errno
 import socket
 import Sprites # objects for sprite movement
-from memory import *
+from Messaging import *
 from constants import *
 from maps import *
 from time import sleep
@@ -302,7 +302,6 @@ def GUI():
 
 
         elif len(p2_hit) > 0:
-            print("calculated explosion here")
             explode(player2, sprites, screen, background, background_rect)
             game_over = True
             ready_for_new_game = False
