@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+##########################
+# Cam, Lucas, Omar
+# maps.py -- predefined list of objects for a map, can be extended to user's
+# liking
+##########################
 from pygame import Rect
 from constants import *
 

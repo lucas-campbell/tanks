@@ -2,7 +2,7 @@
 ##########################
 # Cam, Lucas, Omar
 # 11/5/19
-# Sample Server Class
+# Tank Server
 ##########################
 import socket, select
 import pickle

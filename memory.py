@@ -2,7 +2,7 @@
 ##########################
 # Cam, Lucas, Omar
 # 11/5/19
-# Memory.py Class Definition
+# Memory.py class Definition
 ##########################
 import pickle
 from Sprites import UDLR
@@ -11,8 +11,8 @@ from enum import Enum
 class Player_pos:
     '''For tracking player position and direction'''
     def __init__(self, pos, direct):
-            self.position = pos
-            self.direction = direct  
+        self.position = pos
+        self.direction = direct  
 
 class State:
     '''Representation of the current state in the game'''

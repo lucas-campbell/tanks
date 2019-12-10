@@ -1,4 +1,5 @@
 ###############
+# Cam, Lucas, Omar
 # Sprites.py
 # Definition of Player, Missile, and Obstacle Sprites
 ###############

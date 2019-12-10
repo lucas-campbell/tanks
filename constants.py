@@ -1,3 +1,8 @@
+##################
+# Cam, Lucas, Omar
+# constants.py
+##################
+
 # display dimensions for the game
 WIDTH = 800
 HEIGHT = 800
