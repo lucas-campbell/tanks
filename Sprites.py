@@ -8,13 +8,23 @@ from enum import Enum
 from constants import *
 
 class UDLR(Enum):
+    """
+    Simple enum used to keep track of direction for Sprites
+    """
     up = 0
     down = 1
     left = 2
     right = 3
 
+# For all pygame.Sprite objects, self.image is what is show to the
+# user, and self.rect is the area that it takes up (used for collisions)
 class Player(pygame.sprite.Sprite):
-    def __init__(self, image_file_path, player_number, is_active_player, center, direction):
+    """
+    Player class, inherits from pygame sprites. Used to represent a tank on the
+    map, and capable of spawning Missile objects via the shoot() method.
+    """
+    def __init__(self, image_file_path, player_number, is_active_player,
+                 center, direction):
         self.player_number = player_number
         self.is_active_player = is_active_player
         pygame.sprite.Sprite.__init__(self)
@@ -34,9 +44,8 @@ class Player(pygame.sprite.Sprite):
         """
         Implementation of pygame.sprite.Sprite.update method. Gets called for 
         each sprite in a Group with pygame.sprite.Group.update()
-        Takes in a connection object used for communicating with the client
-        middleman process. Calculates new position & waits for update on other
-        tank's position, then updates display accordingly.
+        Takes in a State object containing updated enemy tank info, in case we
+        are currently updating the enemy Player's sprite
         """
         ### Process User Input ###
 
@@ -136,6 +145,10 @@ class Player(pygame.sprite.Sprite):
         
 
 class Obstacle(pygame.sprite.Sprite):
+    """
+    Non-moving Sprites. implemented as such in order to take advantage of the
+    pygame.spritecollide() function for missiles and tank movement.
+    """
     def __init__(self, r):
         self.rect = r
         self.image = pygame.Surface((r.width, r.height))
@@ -146,6 +159,12 @@ class Obstacle(pygame.sprite.Sprite):
 
 
 class Missile(pygame.sprite.Sprite):
+    """
+    Sprite for missiles shot by tanks. Once spawned, these have a consistent
+    trajectory and will not be updated by further user input. This allows for
+    each client's pygame engine to keep track of missile collisions separately
+    with a guarantee that they will calculate the same explosions.
+    """
     def __init__(self, center, direction):
         pygame.sprite.Sprite.__init__(self)
         # Get image
@@ -182,7 +201,8 @@ class Missile(pygame.sprite.Sprite):
         self.rect.y += self.speedy
         
         # Check for collision with obstacles
-        hit_obstacle = pygame.sprite.spritecollide(self, obstacles, dokill=False)
+        hit_obstacle = pygame.sprite.spritecollide(self, obstacles,
+                                                   dokill=False)
         if len(hit_obstacle) > 0:
             self.kill()
 

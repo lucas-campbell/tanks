@@ -16,7 +16,8 @@ def add_header(data):
     pack_header = '{:<{}}'.format(msg_len, HEADERSIZE)
     return bytes(pack_header, 'utf-8')+data
 
-def show_reset_screen(screen, background, background_rect, clock, connection, won=False, lost=False):
+def show_reset_screen(screen, background, background_rect, clock, connection,\
+                      won=False, lost=False):
     """
     Displays message to user that they have lost or won
     """
@@ -65,6 +66,9 @@ def show_reset_screen(screen, background, background_rect, clock, connection, wo
 
 font_name = pygame.font.match_font('arial')
 def draw_text(surf, text, size, x, y):
+    """
+    Draws text on a given surface, but does not flip() the pygame display
+    """
     font = pygame.font.Font(font_name, size)
     text_surface = font.render(text, True, WHITE)
     text_rect = text_surface.get_rect()
@@ -72,6 +76,9 @@ def draw_text(surf, text, size, x, y):
     surf.blit(text_surface, text_rect)
 
 def explode(exploding_player, sprites, screen, background, background_rect):
+    """
+    Draw explosion on screen and flip() to show to user
+    """
     # Create explosion in correct place
     explosion = pygame.image.load('explosion.png').convert()
     explosion = pygame.transform.scale(explosion, exploding_player.rect.size)
@@ -91,6 +98,10 @@ def explode(exploding_player, sprites, screen, background, background_rect):
 
 
 def GUI():
+    """
+    Main driver for client functionality. Connects with server, then loops
+    getting information from user and sending/receving updates from the server
+    """
     
 ##################  SETUP   #######################################
     # initialize pygame and create window
@@ -144,7 +155,8 @@ def GUI():
                 continue
 
         if game_over:
-            show_reset_screen(screen, background, background_rect, clock, client, won, lost)
+            show_reset_screen(screen, background, background_rect, clock,\
+                              client, won, lost)
             game_over = False
             won = False
             lost = False
@@ -152,12 +164,16 @@ def GUI():
             # Create players and their sprites
             sprites = pygame.sprite.Group()
             
+            # Need to keep track of which sprite to update when we receive
+            # keyboard updates
             client_is_p1 = (player_num == 1)
 
             player1 = Sprites.Player('high_res_blue_tank.png', 1, client_is_p1,
-                                    player1_start.position, player1_pos.direction)
-            player2 = Sprites.Player('high_res_green_tank.png', 2, not client_is_p1,
-                                    player2_start.position, player2_pos.direction)
+                                    player1_start.position,
+                                    player1_pos.direction)
+            player2 = Sprites.Player('high_res_green_tank.png', 2,
+                                    not client_is_p1, player2_start.position,
+                                    player2_pos.direction)
             sprites.add(player1) 
             sprites.add(player2) 
             # Create group of missiles to keep track of hits
@@ -190,7 +206,8 @@ def GUI():
                 their_missiles = p1_missiles
 
             ready_for_new_game = True
-            player_data = Memory(players[player_num-1], _ready = ready_for_new_game)
+            player_data = Memory(players[player_num-1],
+                                 _ready = ready_for_new_game)
             data = pickle.dumps(player_data)
             data = add_header(data)
             client.sendall(data)
@@ -208,7 +225,8 @@ def GUI():
                     running = False 
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        my_new_missiles.append(player.shoot(sprites, my_missiles))
+                        my_new_missiles.append(player.shoot(sprites,
+                                                            my_missiles))
 
             # Update: update sprite positions, send info to server and
             # receive info on other tank's position
@@ -220,7 +238,9 @@ def GUI():
         try:
             # SEND FOR NEW GAME #
             if other_player_ready:
-                player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready = ready_for_new_game)
+                player_data = Memory(players[player_num-1], my_new_missiles,
+                                     game_over, won,
+                                     _ready = ready_for_new_game)
                 data = pickle.dumps(player_data)
                 data = add_header(data)
                 client.sendall(data)
@@ -281,8 +301,10 @@ def GUI():
                 sprites.add(new_enemy_missile)
 
             
+        # Calls each sprite's update() method within the group
         sprites.update(game_state, obstacles)
 
+        # Check for collisions with enemy missiles
         p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, dokill=False)
         p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, dokill=False)
 
@@ -295,7 +317,10 @@ def GUI():
             else:
                 lost = True
 
-            player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready=False)
+            # Game is over, so send se4rver info that we are not ready for a
+            # new game yet
+            player_data = Memory(players[player_num-1], my_new_missiles,
+                                 game_over, won, _ready=False)
             data = pickle.dumps(player_data)
             data = add_header(data)
             client.sendall(data)
@@ -310,12 +335,16 @@ def GUI():
             else:
                 won = True
 
-            player_data = Memory(players[player_num-1], my_new_missiles, game_over, won, _ready=False)
+            # Game is over, so send se4rver info that we are not ready for a
+            # new game yet
+            player_data = Memory(players[player_num-1], my_new_missiles,
+                                 game_over, won, _ready=False)
             data = pickle.dumps(player_data)
             data = add_header(data)
             client.sendall(data)
 
         if game_over:
+            # Slight Delay for explosions to persist on screen
             sleep(2)
 
         # Draw / render
@@ -324,6 +353,7 @@ def GUI():
         sprites.draw(screen)
         # after drawing everything, flip the display
 
+        # Update what the user sees
         pygame.display.flip()
 
     pygame.display.quit()

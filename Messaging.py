@@ -16,7 +16,8 @@ class Player_pos:
 
 class State:
     '''Representation of the current state in the game'''
-    def __init__(self, _players, _missiles = [[],[]], _game_over = False, _player_won = 1, _ps_ready = [False, False]):
+    def __init__(self, _players, _missiles = [[],[]], _game_over = False,
+                 _player_won = 1, _ps_ready = [False, False]):
         self.ps = _players
         self.missiles = _missiles
         self.game_over = _game_over
@@ -25,7 +26,8 @@ class State:
 
 class Memory:
     '''Information for a single client to send to the server on update'''
-    def __init__(self, player, new_missiles = [], game_over = False, p_won = False, _ready = False):
+    def __init__(self, player, new_missiles = [], game_over = False,
+                 p_won = False, _ready = False):
         self.p = player
         self.end = game_over
         self.player_won = p_won
