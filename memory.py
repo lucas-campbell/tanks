@@ -10,9 +10,9 @@ from enum import Enum
 
 class Player_pos:
     '''For tracking player position and direction'''
-	def __init__(self, pos, direct):
-		self.position = pos
-		self.direction = direct  
+    def __init__(self, pos, direct):
+            self.position = pos
+            self.direction = direct  
 
 class State:
     '''Representation of the current state in the game'''
@@ -25,9 +25,9 @@ class State:
 
 class Memory:
     '''Information for a single client to send to the server on update'''
-	def __init__(self, player, new_missiles = [], game_over = False, p_won = False, _ready = False):
-            self.p = player
-            self.end = game_over
-            self.player_won = p_won
-            self.missiles = new_missiles
-            self.ready = _ready
+    def __init__(self, player, new_missiles = [], game_over = False, p_won = False, _ready = False):
+        self.p = player
+        self.end = game_over
+        self.player_won = p_won
+        self.missiles = new_missiles
+        self.ready = _ready
