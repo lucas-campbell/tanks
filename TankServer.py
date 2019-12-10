@@ -7,9 +7,8 @@
 import socket, select
 import pickle
 import sys
+from constants import *
 from memory import *
-
-HEADERSIZE = 16
 
 def getData(tsocket):
     '''Gets data and formats it using socket.recv'''
