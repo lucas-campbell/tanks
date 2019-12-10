@@ -4,7 +4,6 @@
 # 11/5/19
 # Memory.py Class Definition
 ##########################
-from Arena import *
 import pickle
 from Sprites import UDLR
 from enum import Enum
