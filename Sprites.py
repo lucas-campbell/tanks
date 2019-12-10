@@ -1,3 +1,7 @@
+###############
+# Sprites.py
+# Definition of Player, Missile, and Obstacle Sprites
+###############
 import pygame
 from enum import Enum
 from constants import *
@@ -19,17 +23,6 @@ class Player(pygame.sprite.Sprite):
         self.original = self.image.copy()
         self.original.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
-        # sets starting position of sprite, TODO change with a ctor param based on which map
-        #self.rect.centery = HEIGHT / 2
-        #if self.player_number == 1:
-        #    self.rect.centerx = 20
-        #else:
-        #    self.rect.centerx = WIDTH - 20
-        ## starting x/y speeds
-        #self.speedx = 0
-        #self.speedy = 0
-        ## starting direction
-        #self.direction = UDLR.up
         self.rect.centerx = center[0]
         self.rect.centery = center[1]
         self.direction = direction
@@ -93,10 +86,7 @@ class Player(pygame.sprite.Sprite):
             elif self.rect.top < 0:
                 self.rect.top = 0
 
-            #TODO obstacle collision checking
-
         else:
-            # TODO check: is game over, collisions, new missile
             updated_pos = game_state.ps[self.player_number-1]
             self.rect.center = updated_pos.position
             new_direction = updated_pos.direction
@@ -159,8 +149,7 @@ class Missile(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # Get image
         self.image = pygame.image.load('spr_missile.png').convert()
-        #TODO better scaling process(?), change to constants
-        self.image = pygame.transform.scale(self.image, (15, 30))
+        self.image = pygame.transform.scale(self.image, (MISSILE_W, MISSILE_H))
 
         # Set speed/direction for missile
         self.direction = direction
@@ -185,7 +174,6 @@ class Missile(pygame.sprite.Sprite):
         # Set starting position
         self.rect.center = center
 
-        # clear background for sprite TODO possibly black?
         self.image.set_colorkey(WHITE)
 
     def update(self, game_state, obstacles):

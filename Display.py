@@ -2,14 +2,13 @@
 import pygame
 import random
 import errno
+import socket
 import Sprites # objects for sprite movement
 from memory import *
 from constants import *
 from maps import *
 from time import sleep
 import copy
-
-HEADERSIZE = 16
 
 def add_header(data):
     '''Adds a header to a Bytes object'''
@@ -93,8 +92,6 @@ def explode(exploding_player, sprites, screen, background, background_rect):
 
 def GUI():
     
-#### < TODO Add initial setup with server here > ####
-
 ##################  SETUP   #######################################
     # initialize pygame and create window
     pygame.init()
@@ -110,12 +107,10 @@ def GUI():
     HOST = input('SERVER IP:')
     PORT = 47477      
     player_num = 0
-    player1_start = Player_pos(pos = (20, 400), direct = UDLR.up)
-    player2_start = Player_pos(pos = (800-20, 400), direct = UDLR.up)
+    player1_start = Player_pos(pos = P1_START, direct = UDLR.up)
+    player2_start = Player_pos(pos = P2_START, direct = UDLR.up)
     player1_pos = copy.deepcopy(player1_start)
     player2_pos = copy.deepcopy(player2_start)
-    #player1_pos = Player_pos(pos = (20, 400), direct = UDLR.down)
-    #player2_pos = Player_pos(pos = (800-20, 400), direct = UDLR.up)
     players = [player1_pos, player2_pos]
     state = State(players, [[],[]], False) 
 
@@ -178,7 +173,6 @@ def GUI():
                 obstacles.add(obst)
                 sprites.add(obst)
 
-            #TODO change given info from server
             # Aliases, may just name them appropriately above
             if player_num == 1:
                 print("I am player 1")
@@ -214,7 +208,6 @@ def GUI():
                     running = False 
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        #TODO determine which player we are
                         my_new_missiles.append(player.shoot(sprites, my_missiles))
 
             # Update: update sprite positions, send info to server and
@@ -290,13 +283,10 @@ def GUI():
             
         sprites.update(game_state, obstacles)
 
-        #TODO tank collision --> tie game
-
         p1_hit = pygame.sprite.spritecollide(player1, p2_missiles, dokill=False)
         p2_hit = pygame.sprite.spritecollide(player2, p1_missiles, dokill=False)
 
         if len(p1_hit) > 0:
-            #print("calculated explosion here")
             explode(player1, sprites, screen, background, background_rect)
             game_over = True
             ready_for_new_game = False
@@ -330,14 +320,11 @@ def GUI():
             sleep(2)
 
         # Draw / render
-        #TODO remove fill black
-        #screen.fill(BLACK)
         screen.blit(background, background_rect)
-        #  Blits all sprites to screen
+        # Blits all sprites to screen
         sprites.draw(screen)
         # after drawing everything, flip the display
 
-        # TODO possibly call display.update() with list of dirty rect's, for speed
         pygame.display.flip()
 
     pygame.display.quit()

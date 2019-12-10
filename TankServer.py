@@ -8,8 +8,7 @@ import socket, select
 import pickle
 import sys
 from memory import *
-
-HEADERSIZE = 16
+from constants import *
 
 def getData(tsocket):
     '''Gets data and formats it using socket.recv'''
@@ -34,8 +33,8 @@ def main(argv, defaultHost):
     PORT = 47477
     
     # INIT CONDITIONS #
-    player1 = Player_pos(pos = (20, 400), direct = UDLR.down)
-    player2 = Player_pos(pos = (800-20, 400), direct = UDLR.up)
+    player1 = Player_pos(pos = P1_START, direct = UDLR.up)
+    player2 = Player_pos(pos = P2_START, direct = UDLR.up)
     players = [player1, player2]
     state = State(players)
     sample_msg = Memory(player1, new_missiles = [], game_over = False, p_won = False)

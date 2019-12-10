@@ -2,21 +2,29 @@
 WIDTH = 800
 HEIGHT = 800
 
+# Player Start Positions
+P1_START = (20, 400)
+P2_START = (780, 400)
+
+# Sprite Dimensions
+MISSILE_W = 15
+MISSILE_H = 30
+
 TANK_W = 40
 TANK_H = 40
+
+OBST_DIM = (HEIGHT / 16) + 10
 
 # clock speed for pygame engine
 FPS = 60
 
-OBST_W = None
 
 # colors, for ease of use
-# TODO take out unnecessary r, g, b
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
 dark_green = (0, 102, 0)
-BLUE = (0, 0, 255)
 
+
+# Server communication
+HEADERSIZE = 16
 
